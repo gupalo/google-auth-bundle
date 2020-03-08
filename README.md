@@ -69,7 +69,7 @@ security:
             pattern: ^/
             logout:
                 path: google_auth_security_logout
-                target: google_auth_security_logout_force
+                target: homepage
             anonymous:    true
             guard:
                 authenticators:
