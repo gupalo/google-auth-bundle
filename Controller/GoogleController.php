@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Throwable;
 
 class GoogleController extends AbstractController
 {
@@ -53,13 +52,7 @@ class GoogleController extends AbstractController
 
     public function forceLogout(): RedirectResponse
     {
-        try {
-            /** @noinspection PhpRouteMissingInspection */
-            $url = $this->get('router')->generate('homepage');
-        } catch (Throwable $e) {
-            $url = '/';
-        }
-        $response = new RedirectResponse($url);
+        $response = new RedirectResponse($this->get('router')->generate('google_auth_security_logout'));
         $response->headers->setCookie(new Cookie('logout', 1, '+1 hour'));
 
         return $response;
