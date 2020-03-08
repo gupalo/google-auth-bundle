@@ -10,11 +10,11 @@ Get Google App id and secret at https://console.developers.google.com/apis/crede
 
 Add env vars:
 
-* GOOGLE_AUTH_APP_ID: from Google Console
-* GOOGLE_AUTH_APP_SECRET: from Google Console
-* GOOGLE_AUTH_DOMAIN: which domain is allowed to login; empty if all domains
-* GOOGLE_AUTH_USERS: which users should be autoactivated; empty if no users
-* GOOGLE_AUTH_ADMINS: which users should be autoactivated as admins; empty if none
+* `GOOGLE_AUTH_APP_ID`: from Google Console
+* `GOOGLE_AUTH_APP_SECRET`: from Google Console
+* `GOOGLE_AUTH_DOMAIN`: which domain is allowed to login; empty if all domains
+* `GOOGLE_AUTH_USERS`: which users should be autoactivated; empty if no users
+* `GOOGLE_AUTH_ADMINS`: which users should be autoactivated as admins; empty if none
 
 Or add parameters to `config/services.yaml`
 
@@ -33,12 +33,11 @@ Install
 composer require gupalo/google-auth-bundle
 ```
 
-2) Add **GoogleAuthBundle** and **KnpUOAuth2ClientBundle** to `app/AppKernel.php`
+2) Check that **GoogleAuthBundle** and **KnpUOAuth2ClientBundle** are in `config/bundles.php`
 
 ```php
-// config/bundles.php
-KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle()::class => ['all' => true],
-Gupalo\GoogleAuthBundle\GoogleAuthBundle()::class => ['all' => true],
+KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle::class => ['all' => true],
+Gupalo\GoogleAuthBundle\GoogleAuthBundle::class => ['all' => true],
 ```
 
 3) Set `config/packages/security.yaml`
