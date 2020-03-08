@@ -1,0 +1,53 @@
+parameters:
+    google_auth_domain: ''
+    google_auth_users: ''
+    google_auth_admins: ''
+    google_auth_app_id: ''
+    google_auth_app_secret: ''
+    auth.user_class: 'Gupalo\GoogleAuthBundle\Entity\User'
+
+services:
+    google_auth.controller.api:
+        class: Gupalo\GoogleAuthBundle\Controller\ApiController
+        public: true
+        calls:
+            - [setContainer, ["@service_container"]]
+    google_auth.controller.google:
+        class: Gupalo\GoogleAuthBundle\Controller\GoogleController
+        public: true
+        calls:
+            - [setContainer, ["@service_container"]]
+
+    google_auth.model.user_manager:
+        class: Gupalo\GoogleAuthBundle\Model\UserManager
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '%auth.user_class%'
+
+    google_auth.security.google_authenticator:
+        class: Gupalo\GoogleAuthBundle\Security\GoogleAuthenticator
+        arguments:
+            - '@oauth2.registry'
+            - '@router'
+            - '@google_auth.model.user_manager'
+            - '%google_auth_domain%'
+            - '%google_auth_users%'
+            - '%google_auth_admins%'
+
+    google_auth.security.api_key_user_provider:
+        class: Gupalo\GoogleAuthBundle\Security\ApiKeyUserProvider
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '%auth.user_class%'
+        public: true
+    google_auth.security.api_key_authenticator:
+        class: Gupalo\GoogleAuthBundle\Security\ApiKeyAuthenticator
+        public: false
+
+    twig.security_extension:
+        class: Gupalo\GoogleAuthBundle\Twig\SecurityExtension
+        public: false
+        arguments:
+            - '@security.token_storage'
+        tags:
+            - { name: twig.extension }
