@@ -67,7 +67,9 @@ security:
             provider: api_key_user_provider
         main:
             pattern: ^/
-            logout:       true
+            logout:
+                path: google_auth_security_logout
+                target: google_auth_security_logout_force
             anonymous:    true
             guard:
                 authenticators:

@@ -47,15 +47,12 @@ class GoogleController extends AbstractController
 
     public function logout(): Response
     {
-        $response = new RedirectResponse($this->get('router')->generate('google_auth_security_logout'));
-        $response->headers->setCookie(new Cookie('logout', 1, '+1 hour'));
-
-        return $response;
+        //
     }
 
     public function forceLogout(): RedirectResponse
     {
-        $response = new RedirectResponse($this->get('router')->generate('google_auth_security_logout'));
+        $response = new RedirectResponse($this->get('router')->generate('google_auth_security_login'));
         $response->headers->setCookie(new Cookie('logout', 1, '+1 hour'));
 
         return $response;
