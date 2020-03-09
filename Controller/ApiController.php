@@ -11,7 +11,7 @@ class ApiController extends AbstractController
     /**
      * Provides key that can be used to connect to other services with GoogleAuthBundle
      *
-     * @return JsonResponse {api_key: string}
+     * @return JsonResponse {apikey: string}
      */
     public function key(): JsonResponse
     {
@@ -24,7 +24,7 @@ class ApiController extends AbstractController
         }
 
         return JsonResponse::create([
-            'api_key' => $user->getApiKey(),
+            'apikey' => $user->getApiKey(),
         ]);
     }
 }
