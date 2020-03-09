@@ -16,15 +16,21 @@ Add env vars:
 * `GOOGLE_AUTH_USERS`: which users should be autoactivated; empty if no users
 * `GOOGLE_AUTH_ADMINS`: which users should be autoactivated as admins; empty if none
 
-Or add parameters to `config/services.yaml`
+And create `config/packages/google_auth.yaml`
 
 ```yaml
 parameters:
-    google_auth_app_id:     something.apps.googleusercontent.com
-    google_auth_app_secret: your_secret
-    google_auth_domain:     yourdomain.com
-    google_auth_users:      user1,user2
-    google_auth_admins:     admin1,admin2
+    env(GOOGLE_AUTH_APP_ID): something.apps.googleusercontent.com
+    env(GOOGLE_AUTH_APP_SECRET): your_secret
+    env(GOOGLE_AUTH_DOMAIN): yourdomain.com
+    env(GOOGLE_AUTH_USERS): user1,user2
+    env(GOOGLE_AUTH_ADMINS): user1,user2
+
+    google_auth_app_id: '%env(string:GOOGLE_AUTH_APP_ID)%'
+    google_auth_app_secret: '%env(string:GOOGLE_AUTH_APP_SECRET)%'
+    google_auth_domain: '%env(string:GOOGLE_AUTH_DOMAIN)%'
+    google_auth_users: '%env(string:GOOGLE_AUTH_USERS)%'
+    google_auth_admins: '%env(string:GOOGLE_AUTH_ADMINS)%'
 ```
 
 Install
@@ -62,8 +68,10 @@ security:
         api:
             pattern: ^/api/
             stateless: true
-            simple_preauth:
-                authenticator: google_auth.security.api_key_authenticator
+            guard:
+                authenticators:
+                    - google_auth.security.api_key_authenticator
+                entry_point: google_auth.security.api_key_authenticator
             provider: api_key_user_provider
         main:
             pattern: ^/
@@ -75,6 +83,7 @@ security:
                 authenticators:
                     - google_auth.security.google_authenticator
                 entry_point: google_auth.security.google_authenticator
+            provider: database_users
             remember_me:
                 secret: "%secret%"
                 lifetime: 31536000 # 365 days in seconds
