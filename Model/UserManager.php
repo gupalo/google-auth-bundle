@@ -43,6 +43,11 @@ class UserManager
         return new $class;
     }
 
+    public function countEnabled(): int
+    {
+        return $this->repository->count(['enabled' => true]);
+    }
+
     public function findOneByGoogleId(string $googleId): ?User
     {
         return $this->repository->findOneByGoogleId($googleId);

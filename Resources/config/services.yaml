@@ -1,24 +1,21 @@
 parameters:
     env(GOOGLE_AUTH_APP_ID): something.apps.googleusercontent.com
     env(GOOGLE_AUTH_APP_SECRET): your_secret
-    env(GOOGLE_AUTH_DOMAIN): yourdomain.com
+    env(GOOGLE_AUTH_DOMAIN): '*'
     env(GOOGLE_AUTH_USERS): user1,user2
     env(GOOGLE_AUTH_ADMINS): user1,user2
+    env(GOOGLE_AUTH_DEFAULT_APIKEY): ''
 
     google_auth_app_id: '%env(string:GOOGLE_AUTH_APP_ID)%'
     google_auth_app_secret: '%env(string:GOOGLE_AUTH_APP_SECRET)%'
     google_auth_domain: '%env(string:GOOGLE_AUTH_DOMAIN)%'
     google_auth_users: '%env(string:GOOGLE_AUTH_USERS)%'
     google_auth_admins: '%env(string:GOOGLE_AUTH_ADMINS)%'
+    google_auth_default_apikey: '%env(string:GOOGLE_AUTH_DEFAULT_APIKEY)%'
 
     auth.user_class: 'Gupalo\GoogleAuthBundle\Entity\User'
 
 services:
-    google_auth.controller.api:
-        class: Gupalo\GoogleAuthBundle\Controller\ApiController
-        public: true
-        calls:
-            - [setContainer, ["@service_container"]]
     google_auth.controller.google:
         class: Gupalo\GoogleAuthBundle\Controller\GoogleController
         public: true
@@ -40,16 +37,7 @@ services:
             - '%google_auth_domain%'
             - '%google_auth_users%'
             - '%google_auth_admins%'
-
-    google_auth.security.api_key_user_provider:
-        class: Gupalo\GoogleAuthBundle\Security\ApiKeyUserProvider
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '%auth.user_class%'
-        public: true
-    google_auth.security.api_key_authenticator:
-        class: Gupalo\GoogleAuthBundle\Security\ApiKeyAuthenticator
-        public: false
+            - '%google_auth_default_apikey%'
 
     twig.security_extension:
         class: Gupalo\GoogleAuthBundle\Twig\SecurityExtension

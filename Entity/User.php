@@ -17,6 +17,7 @@ class User implements UserInterface
 {
     public const ROLE_GUEST = 'ROLE_GUEST';
     public const ROLE_USER = 'ROLE_USER';
+    public const ROLE_API = 'ROLE_API';
     public const ROLE_MANAGER = 'ROLE_MANAGER';
     public const ROLE_ADMIN = 'ROLE_ADMIN';
 

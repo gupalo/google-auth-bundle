@@ -15,6 +15,7 @@ Add env vars:
 * `GOOGLE_AUTH_DOMAIN`: which domain is allowed to login; empty if all domains
 * `GOOGLE_AUTH_USERS`: which users should be autoactivated; empty if no users
 * `GOOGLE_AUTH_ADMINS`: which users should be autoactivated as admins; empty if none
+* `GOOGLE_AUTH_DEFAULT_APIKEY`: set if you want to autocreate "api@example.com" user with this key
 
 And create `config/packages/google_auth.yaml`
 
@@ -25,12 +26,14 @@ parameters:
     env(GOOGLE_AUTH_DOMAIN): yourdomain.com
     env(GOOGLE_AUTH_USERS): user1,user2
     env(GOOGLE_AUTH_ADMINS): user1,user2
+    env(GOOGLE_AUTH_DEFAULT_APIKEY): ''
 
     google_auth_app_id: '%env(string:GOOGLE_AUTH_APP_ID)%'
     google_auth_app_secret: '%env(string:GOOGLE_AUTH_APP_SECRET)%'
     google_auth_domain: '%env(string:GOOGLE_AUTH_DOMAIN)%'
     google_auth_users: '%env(string:GOOGLE_AUTH_USERS)%'
     google_auth_admins: '%env(string:GOOGLE_AUTH_ADMINS)%'
+    google_auth_default_apikey: '%env(string:GOOGLE_AUTH_DEFAULT_APIKEY)%'
 ```
 
 Install

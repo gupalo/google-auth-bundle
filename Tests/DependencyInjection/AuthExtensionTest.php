@@ -45,12 +45,9 @@ class AuthExtensionTest extends TestCase
 
         $expectedServices = [
             'service_container',
-            'google_auth.controller.api',
             'google_auth.controller.google',
             'google_auth.model.user_manager',
             'google_auth.security.google_authenticator',
-            'google_auth.security.api_key_user_provider',
-            'google_auth.security.api_key_authenticator',
             'twig.security_extension',
         ];
         $this->assertEquals($expectedServices, array_keys($container->getDefinitions()));

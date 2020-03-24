@@ -56,21 +56,24 @@ class GoogleAuthenticator extends SocialAuthenticator
     /** @var string[] */
     private $adminUsernames;
 
+    private ?string $defaultApiKey;
+
     public function __construct(
         ClientRegistry $clientRegistry,
         RouterInterface $router,
         UserManager $userManager = null,
         string $googleDomain = null,
         string $allowedUsernames = null,
-        string $adminUsernames = null
-    )
-    {
+        string $adminUsernames = null,
+        string $defaultApiKey = null
+    ) {
         $this->clientRegistry = $clientRegistry;
         $this->router = $router;
         $this->userManager = $userManager;
         $this->googleDomains = array_values(array_filter(array_map('trim', explode(',', mb_strtolower($googleDomain)))));
         $this->allowedUsernames = array_values(array_filter(array_map('trim', explode(',', mb_strtolower($allowedUsernames)))));
         $this->adminUsernames = array_values(array_filter(array_map('trim', explode(',', mb_strtolower($adminUsernames)))));
+        $this->defaultApiKey = $defaultApiKey;
     }
 
     /**
@@ -146,6 +149,16 @@ class GoogleAuthenticator extends SocialAuthenticator
                 throw new AuthenticationException();
             }
 
+            if ($this->defaultApiKey && !$this->userManager->countEnabled()) {
+                $this->userManager->createUser()
+                    ->setEnabled(true)
+                    ->setEmail('api@example.com')
+                    ->setUsername('api')
+                    ->setRoles([User::ROLE_API])
+                    ->setApiKey($this->defaultApiKey)
+                    ->setData([]);
+            }
+
             $user = $this->userManager->createUser()
                 ->setEnabled(false)
                 ->setEmail($email)
@@ -210,9 +223,8 @@ class GoogleAuthenticator extends SocialAuthenticator
         $url = $this->getPreviousUrl($request, $providerKey);
         if (!$url) {
             try {
-                /** @noinspection PhpRouteMissingInspection */
                 $url = $this->router->generate('homepage');
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $url = '/';
             }
         }

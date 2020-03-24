@@ -13,7 +13,3 @@ google_auth_security_logout:
 google_auth_security_logout_force:
     path: /auth/logout/force
     defaults: { _controller: 'google_auth.controller.google::forceLogout' }
-
-google_auth_api_key:
-    path: /auth/key.json
-    defaults: { _controller: 'google_auth.controller.api::key' }
