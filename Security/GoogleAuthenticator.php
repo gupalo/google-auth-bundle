@@ -149,16 +149,6 @@ class GoogleAuthenticator extends SocialAuthenticator
                 throw new AuthenticationException();
             }
 
-            if ($this->defaultApiKey && !$this->userManager->countEnabled()) {
-                $this->userManager->createUser()
-                    ->setEnabled(true)
-                    ->setEmail('api@example.com')
-                    ->setUsername('api')
-                    ->setRoles([User::ROLE_API])
-                    ->setApiKey($this->defaultApiKey)
-                    ->setData([]);
-            }
-
             $user = $this->userManager->createUser()
                 ->setEnabled(false)
                 ->setEmail($email)
@@ -196,6 +186,18 @@ class GoogleAuthenticator extends SocialAuthenticator
             $user->setData([]);
         }
         $this->userManager->saveUser($user);
+
+        if ($this->defaultApiKey && !$this->userManager->findOneByUsername('api')) {
+            $this->userManager->saveUser(
+                $this->userManager->createUser()
+                    ->setEnabled(true)
+                    ->setEmail('api@example.com')
+                    ->setUsername('api')
+                    ->setRoles([User::ROLE_API])
+                    ->setApiKey($this->defaultApiKey)
+                    ->setData([])
+            );
+        }
 
         $user->setIsApiAuth(false);
 

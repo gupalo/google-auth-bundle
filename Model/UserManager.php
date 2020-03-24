@@ -58,6 +58,11 @@ class UserManager
         return $this->repository->findOneByEmail($email);
     }
 
+    public function findOneByUsername(string $username): ?User
+    {
+        return $this->repository->findOneByUsername($username);
+    }
+
     public function findOneByApiKey(string $email): ?User
     {
         return $this->repository->findOneByApiKey($email);
