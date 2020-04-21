@@ -18,7 +18,7 @@ class GoogleController extends AbstractController
      */
     public function login(Request $request): Response
     {
-        $link = $this->get('oauth2.registry')->getClient('google')->getOAuth2Provider()->getAuthorizationUrl();
+        $link = $this->get('oauth2.registry')->getClient('google')->getOAuth2Provider()->getAuthorizationUrl(['prompt' => 'consent']);
 
         if (!$request->cookies->get('logout')) {
             return RedirectResponse::create($link);
