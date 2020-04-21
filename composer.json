@@ -19,7 +19,7 @@
         "php": ">=7.4",
         "doctrine/orm": "^2.7|^3.0",
         "league/oauth2-google": "^3.0",
-        "knpuniversity/oauth2-client-bundle": "^1.33",
+        "knpuniversity/oauth2-client-bundle": "^2.1",
         "symfony/yaml": "^5.0",
         "twig/twig": "^3.0"
     },
