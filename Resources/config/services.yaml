@@ -1,7 +1,7 @@
 parameters:
     env(GOOGLE_AUTH_APP_ID): something.apps.googleusercontent.com
     env(GOOGLE_AUTH_APP_SECRET): your_secret
-    env(GOOGLE_AUTH_DOMAIN): '*'
+    env(GOOGLE_AUTH_DOMAIN): yourdomain.com
     env(GOOGLE_AUTH_USERS): user1,user2
     env(GOOGLE_AUTH_ADMINS): user1,user2
     env(GOOGLE_AUTH_DEFAULT_APIKEY): ''

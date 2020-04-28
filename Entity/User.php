@@ -110,10 +110,14 @@ class User implements UserInterface
      */
     protected ?array $data = [];
 
-    public function __construct()
+    public function __construct(int $id = null)
     {
         $this->createdAt = new DateTime();
         $this->lastActiveAt = new DateTime();
+
+        if ($id) {
+            $this->id = $id;
+        }
     }
 
     public function getId(): ?int

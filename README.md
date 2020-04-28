@@ -12,7 +12,7 @@ Add env vars:
 
 * `GOOGLE_AUTH_APP_ID`: from Google Console
 * `GOOGLE_AUTH_APP_SECRET`: from Google Console
-* `GOOGLE_AUTH_DOMAIN`: which domain is allowed to login; empty if all domains
+* `GOOGLE_AUTH_DOMAIN`: which domain is allowed to login; "*" if all domains; 'user.dev' to skip google auth and login all as ROLE_USER
 * `GOOGLE_AUTH_USERS`: which users should be autoactivated; empty if no users
 * `GOOGLE_AUTH_ADMINS`: which users should be autoactivated as admins; empty if none
 * `GOOGLE_AUTH_DEFAULT_APIKEY`: set if you want to autocreate "api@example.com" user with this key
@@ -23,7 +23,7 @@ And create `config/packages/google_auth.yaml`
 parameters:
     env(GOOGLE_AUTH_APP_ID): something.apps.googleusercontent.com
     env(GOOGLE_AUTH_APP_SECRET): your_secret
-    env(GOOGLE_AUTH_DOMAIN): yourdomain.com
+    env(GOOGLE_AUTH_DOMAIN): "*"
     env(GOOGLE_AUTH_USERS): user1,user2
     env(GOOGLE_AUTH_ADMINS): user1,user2
     env(GOOGLE_AUTH_DEFAULT_APIKEY): ''
@@ -44,7 +44,7 @@ composer require gupalo/google-auth-bundle
 
 2) Check that **GoogleAuthBundle** and **KnpUOAuth2ClientBundle** are in `config/bundles.php`
 
-```php
+```
 KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle::class => ['all' => true],
 Gupalo\GoogleAuthBundle\GoogleAuthBundle::class => ['all' => true],
 ```
@@ -61,30 +61,19 @@ security:
     providers:
         database_users:
             entity: { class: 'Gupalo\GoogleAuthBundle\Entity\User', property: username }
-        api_key_user_provider:
-            id: google_auth.security.api_key_user_provider
 
     firewalls:
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        api:
-            pattern: ^/api/
-            stateless: true
-            guard:
-                authenticators:
-                    - google_auth.security.api_key_authenticator
-                entry_point: google_auth.security.api_key_authenticator
-            provider: api_key_user_provider
         main:
             pattern: ^/
             logout:
                 path: google_auth_security_logout
                 target: homepage
-            anonymous:    true
+            anonymous: true
             guard:
-                authenticators:
-                    - google_auth.security.google_authenticator
+                authenticators: ['google_auth.security.google_authenticator']
                 entry_point: google_auth.security.google_authenticator
             provider: database_users
             remember_me:
@@ -106,3 +95,25 @@ google_auth:
 ```
 
 5) Update your database schema
+
+
+Dev
+---
+
+Set to GOOGLE_AUTH_DOMAIN to one of the values below for dev environment
+
+* user.dev - to login as [User::ROLE_USER]
+* manager.dev - [User::ROLE_MANAGER]
+* admin.dev - [User::ROLE_ADMIN]
+* user-admin.dev - [User::ROLE_USER, User::ROLE_ADMIN]
+
+Set `stateless: true` in `config/packages/dev/security.yaml` like
+```
+imports:
+    - {resource: '../prod/security.yaml'}
+
+security:
+    firewalls:
+        main:
+            stateless: true
+```
