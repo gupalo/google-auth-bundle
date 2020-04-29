@@ -45,31 +45,28 @@ class GoogleAuthenticator extends SocialAuthenticator
         'default' => 'data:image/gif;base64,R0lGODlhIAAgAKIAAN3c3SlFPADJGI+JiQC8qv/FagDS/////yH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDggNzkuMTY0MDM2LCAyMDE5LzA4LzEzLTAxOjA2OjU3ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgMjEuMSAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6Qzg1OEIzODQ4OTk3MTFFQThDOEY4OERBQTRBRjc0NEYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6Qzg1OEIzODU4OTk3MTFFQThDOEY4OERBQTRBRjc0NEYiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpDODU4QjM4Mjg5OTcxMUVBOEM4Rjg4REFBNEFGNzQ0RiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpDODU4QjM4Mzg5OTcxMUVBOEM4Rjg4REFBNEFGNzQ0RiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PgH//v38+/r5+Pf29fTz8vHw7+7t7Ovq6ejn5uXk4+Lh4N/e3dzb2tnY19bV1NPS0dDPzs3My8rJyMfGxcTDwsHAv769vLu6ubi3trW0s7KxsK+urayrqqmop6alpKOioaCfnp2cm5qZmJeWlZSTkpGQj46NjIuKiYiHhoWEg4KBgH9+fXx7enl4d3Z1dHNycXBvbm1sa2ppaGdmZWRjYmFgX15dXFtaWVhXVlVUU1JRUE9OTUxLSklIR0ZFRENCQUA/Pj08Ozo5ODc2NTQzMjEwLy4tLCsqKSgnJiUkIyIhIB8eHRwbGhkYFxYVFBMSERAPDg0MCwoJCAcGBQQDAgEAACH5BAAAAAAALAAAAAAgACAAAAPheLoL/KoUSJm59cjiMjSAwXSLpACkhx0OEAzUEASpp8hzntIDbDM4gWDW6b1egxqLMwoIn6+DDDeT1QrRxuwpDEiTR3ANwFQcnVDaIcf2ZajcrpvnfqOhaV/4F4x3qyw9Pzc5Q35DShRjd3EzgyMAfX86kIkLVIVDTpQnKB45BKGgokQjNqOkoQQBq3U2mJhVbJYPLo9SXj8uni0svr0yj7FsxKXCNCjJyihqt4IdLdC2tyxeSF67L9O3ti5JhDCC1Gu0X+PkJz2RRa6D4pGAZuUV4orNj8nFxDDR1Eq9HhIAADs=',
     ];
 
-    private static $rememberMe = false;
+    private static bool $rememberMe = false;
 
-    /** @var ClientRegistry */
-    private $clientRegistry;
+    private ClientRegistry $clientRegistry;
 
-    /** @var RouterInterface */
-    private $router;
+    private RouterInterface $router;
 
     /** @var string[] */
     private $googleDomains;
 
-    /** @var array */
-    private $allowedUsers;
+    /** @var string[] */
+    private array $allowedUsers;
 
-    /** @var UserManager|null */
-    private $userManager;
-
-    /** @var array */
-    private $adminUsers;
+    private ?UserManager $userManager;
 
     /** @var string[] */
-    private $allowedUsernames;
+    private array $adminUsers;
 
     /** @var string[] */
-    private $adminUsernames;
+    private array $allowedUsernames;
+
+    /** @var string[] */
+    private array $adminUsernames;
 
     private ?string $defaultApiKey;
 
@@ -93,7 +90,7 @@ class GoogleAuthenticator extends SocialAuthenticator
 
     /**
      * @param Request $request
-     * @return AccessToken|string|null
+     * @return AccessToken|string|null And can exit with redirect
      * @throws IdentityProviderException
      */
     public function getCredentials(Request $request)
@@ -340,9 +337,6 @@ class GoogleAuthenticator extends SocialAuthenticator
         return self::DEV_DOMAINS[$domain] ?? [];
     }
 
-    /**
-     * @return User
-     */
     private function getDevUser(): User
     {
         $domain = $this->googleDomains[0] ?: 'example.com';
@@ -351,25 +345,32 @@ class GoogleAuthenticator extends SocialAuthenticator
         $surname = 'Dev';
         $email = sprintf('%s@%s', $username, $domain);
 
-        return (new User(1))
-            ->setEnabled(true)
-            ->setRoles($this->getDevRoles())
-            ->setUsername($username)
-            ->setEmail($email)
-            ->setApiKey($this->defaultApiKey)
-            ->setName(sprintf('%s %s', $firstName, $surname))
-            ->setFirstName($firstName)
-            ->setSurname($surname)
-            ->setPictureUrl(self::DEV_AVATARS[$this->getDevRoles()[0] ?? 'default'])
-            ->setIsEmailVerified(true)
-            ->setLocale('en-us')
-            ->setIsApiAuth(false)
-            ->setData([]);
+        $result = $this->userManager->findOneByEmail($email);
+
+        if (!$result) {
+            $this->userManager->saveUser(
+                $this->userManager->createUser()
+                    ->setEnabled(true)
+                    ->setRoles($this->getDevRoles())
+                    ->setUsername($username)
+                    ->setEmail($email)
+                    ->setApiKey($this->defaultApiKey)
+                    ->setName(sprintf('%s %s', $firstName, $surname))
+                    ->setFirstName($firstName)
+                    ->setSurname($surname)
+                    ->setPictureUrl(self::DEV_AVATARS[$this->getDevRoles()[0] ?? 'default'])
+                    ->setIsEmailVerified(true)
+                    ->setLocale('en-us')
+                    ->setIsApiAuth(false)
+                    ->setData([])
+            );
+
+            $result = $this->userManager->findOneByEmail($email);
+        }
+
+        return $result;
     }
 
-    /**
-     * @return User
-     */
     private function getCliUser(): User
     {
         return (new User(1))
@@ -391,11 +392,6 @@ class GoogleAuthenticator extends SocialAuthenticator
         );
     }
 
-    /**
-     * @param $email
-     * @param $username
-     * @return User
-     */
     private function createUser($email, $username): User
     {
         $user = $this->userManager->createUser()
