@@ -6,6 +6,7 @@ use DateTime;
 use Exception;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
+use KnpU\OAuth2ClientBundle\Exception\MissingAuthorizationCodeException;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
 use KnpU\OAuth2ClientBundle\Security\Helper\FinishRegistrationBehavior;
 use KnpU\OAuth2ClientBundle\Security\Helper\PreviousUrlHelper;
@@ -107,6 +108,9 @@ class GoogleAuthenticator extends SocialAuthenticator
             try {
                 $client = $this->getGoogleClient();
                 $token = $client->getAccessToken();
+            } catch (MissingAuthorizationCodeException $e) {
+                header('Location: ' . $this->router->generate('google_auth_security_register'));
+                exit;
             } catch (IdentityProviderException $e) {
                 // you could parse the response to see the problem
                 throw $e;
