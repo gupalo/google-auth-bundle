@@ -360,6 +360,7 @@ class GoogleAuthenticator extends SocialAuthenticator
                     ->setPictureUrl(self::DEV_AVATARS[$this->getDevRoles()[0] ?? 'default'])
                     ->setIsEmailVerified(true)
                     ->setLocale('en')
+                    ->setApiKey(md5($email . $this->defaultApiKey))
                     ->setIsApiAuth(false)
                     ->setData([])
             );
