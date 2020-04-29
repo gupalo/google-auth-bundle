@@ -16,10 +16,10 @@ class UserManager
     /** @var ObjectRepository|UserRepository */
     private ObjectRepository $repository;
 
-    public function __construct(ObjectManager $objectManager, string $class = User::class)
+    public function __construct(ObjectManager $objectManager, string $class = User::class, ObjectRepository $repository = null)
     {
         $this->objectManager = $objectManager;
-        $this->repository = $objectManager->getRepository($class);
+        $this->repository = $repository ?? $objectManager->getRepository($class);
 
         $metadata = $objectManager->getClassMetadata($class);
         $this->class = $metadata->getName();
