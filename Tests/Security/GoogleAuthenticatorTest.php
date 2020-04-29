@@ -12,6 +12,7 @@ use Gupalo\GoogleAuthBundle\Model\UserManager;
 use Gupalo\GoogleAuthBundle\Security\GoogleAuthenticator;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -24,6 +25,8 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class GoogleAuthenticatorTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var GoogleAuthenticator */
     private $authenticator;
 

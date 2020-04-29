@@ -24,6 +24,8 @@
         "twig/twig": "^3.0"
     },
     "require-dev": {
+        "phpspec/prophecy-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.1",
         "roave/security-advisories": "dev-master",
         "symfony/security-guard": "^5.0",
         "doctrine/doctrine-bundle": "^2.0"

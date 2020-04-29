@@ -8,6 +8,7 @@ use Gupalo\GoogleAuthBundle\Entity\User;
 use Gupalo\GoogleAuthBundle\Model\UserManager;
 use Gupalo\GoogleAuthBundle\Repository\UserRepository;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class TestUser extends User
 {
@@ -18,10 +19,11 @@ class TestUser extends User
  */
 class UserManagerTest extends TestCase
 {
+    use ProphecyTrait;
+
     private const USER_CLASS = TestUser::class;
 
-    /** @var UserManager */
-    private $userManager;
+    private UserManager $userManager;
 
     /** @var ObjectManager */
     private $om;
