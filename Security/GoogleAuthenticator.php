@@ -4,6 +4,7 @@ namespace Gupalo\GoogleAuthBundle\Security;
 
 use DateTime;
 use Exception;
+use Gupalo\GoogleAuthBundle\Entity\AbstractUser;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
 use KnpU\OAuth2ClientBundle\Exception\MissingAuthorizationCodeException;
@@ -123,7 +124,7 @@ class GoogleAuthenticator extends SocialAuthenticator
      * @return User|null
      * @throws Exception
      */
-    public function getUser($credentials, UserProviderInterface $userProvider): ?User
+    public function getUser($credentials, UserProviderInterface $userProvider): ?AbstractUser
     {
         if ($credentials === null) {
             return null;
@@ -337,7 +338,7 @@ class GoogleAuthenticator extends SocialAuthenticator
         return self::DEV_DOMAINS[$domain] ?? [];
     }
 
-    private function getDevUser(): User
+    private function getDevUser(): AbstractUser
     {
         $domain = $this->googleDomains[0] ?: 'example.com';
         $username = preg_replace('#^role_#', '', strtolower($this->getDevRoles()[0] ?: 'dev'));
@@ -371,9 +372,9 @@ class GoogleAuthenticator extends SocialAuthenticator
         return $result;
     }
 
-    private function getCliUser(): User
+    private function getCliUser(): AbstractUser
     {
-        return (new User(1))
+        return $this->userManager->createUser()
             ->setEnabled(true)
             ->setRoles([User::ROLE_USER, User::ROLE_ADMIN])
             ->setUsername('cli');
@@ -392,7 +393,7 @@ class GoogleAuthenticator extends SocialAuthenticator
         );
     }
 
-    private function createUser($email, $username): User
+    private function createUser($email, $username): AbstractUser
     {
         $user = $this->userManager->createUser()
             ->setEnabled(false)
