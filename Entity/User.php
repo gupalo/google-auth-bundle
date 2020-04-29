@@ -89,7 +89,7 @@ class User implements UserInterface
     protected ?string $surname = null;
 
     /**
-     * @ORM\Column(type="string", length=1024, nullable=true, name="picture_url")
+     * @ORM\Column(type="string", length=4096, nullable=true, name="picture_url")
      */
     protected ?string $pictureUrl = null;
 
