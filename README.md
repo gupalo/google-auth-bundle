@@ -57,15 +57,28 @@ security:
         Symfony\Component\Security\Core\User\User:
             algorithm: bcrypt
 
-    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
     providers:
         database_users:
             entity: { class: 'Gupalo\GoogleAuthBundle\Entity\User', property: username }
+
+    role_hierarchy:
+        ROLE_USER: [ROLE_API]
 
     firewalls:
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        healthcheck:
+            pattern:  ^/healthcheck
+            security: false
+        api:
+            pattern: ^/api/
+            anonymous: false
+            stateless: true
+            guard:
+                authenticators: ['google_auth.security.google_authenticator']
+                entry_point: google_auth.security.google_authenticator
+            provider: database_users
         main:
             pattern: ^/
             logout:
@@ -83,7 +96,8 @@ security:
                 domain: ~ # Defaults to the current domain from $_SERVER
                 #always_remember_me: true
     access_control:
-        - { path: ^/auth/login, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/auth/, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/, roles: ROLE_API }
         - { path: ^/, roles: ROLE_USER }
 ```
 
