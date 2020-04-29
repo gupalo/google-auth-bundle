@@ -14,9 +14,9 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class UserRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, string $entityClass = User::class)
     {
-        parent::__construct($registry, User::class);
+        parent::__construct($registry, $entityClass);
     }
 
     public function findOneByGoogleId(string $googleId): ?User
