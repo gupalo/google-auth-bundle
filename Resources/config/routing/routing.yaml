@@ -2,6 +2,10 @@ google_auth_security_login:
     path: /auth/login
     defaults: { _controller: 'google_auth.controller.google::login' }
 
+google_auth_security_register:
+    path: /auth/register
+    defaults: { _controller: 'google_auth.controller.google::register' }
+
 google_auth_connect_google_check:
     path: /auth/check
     defaults: { _controller: 'google_auth.controller.google::check' }
