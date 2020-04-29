@@ -18,7 +18,7 @@ class GoogleController extends AbstractController
      */
     public function login(Request $request): Response
     {
-        $this->loginRegister($request, 'none');
+        return $this->loginRegister($request, 'none');
     }
 
     /**
@@ -29,7 +29,7 @@ class GoogleController extends AbstractController
      */
     public function register(Request $request): Response
     {
-        $this->loginRegister($request, 'consent');
+        return $this->loginRegister($request, 'consent');
     }
 
     private function loginRegister(Request $request, string $prompt): Response
