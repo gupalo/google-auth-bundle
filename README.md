@@ -106,14 +106,3 @@ Set to GOOGLE_AUTH_DOMAIN to one of the values below for dev environment
 * manager.dev - [User::ROLE_MANAGER]
 * admin.dev - [User::ROLE_ADMIN]
 * user-admin.dev - [User::ROLE_USER, User::ROLE_ADMIN]
-
-Set `stateless: true` in `config/packages/dev/security.yaml` like
-```
-imports:
-    - {resource: '../prod/security.yaml'}
-
-security:
-    firewalls:
-        main:
-            stateless: true
-```
