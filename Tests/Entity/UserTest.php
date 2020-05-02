@@ -49,7 +49,7 @@ class UserTest extends TestCase
 
     public function testGoogleId(): void
     {
-        $this->assertNull($this->user->getGoogleId());
+        $this->assertSame('', $this->user->getGoogleId());
         $googleId = '123asd321';
         $this->user->setGoogleId($googleId);
         $this->assertSame($googleId, $this->user->getGoogleId());
@@ -57,7 +57,7 @@ class UserTest extends TestCase
 
     public function testGoogleAccessToken(): void
     {
-        $this->assertNull($this->user->getGoogleAccessToken());
+        $this->assertSame('', $this->user->getGoogleAccessToken());
         $googleAccessToken = '123asd321';
         $this->user->setGoogleAccessToken($googleAccessToken);
         $this->assertSame($googleAccessToken, $this->user->getGoogleAccessToken());
@@ -65,7 +65,7 @@ class UserTest extends TestCase
 
     public function testUsername(): void
     {
-        $this->assertNull($this->user->getUsername());
+        $this->assertSame('', $this->user->getUsername());
         $username = '123asd321';
         $this->user->setUsername($username);
         $this->assertSame($username, $this->user->getUsername());
@@ -80,7 +80,7 @@ class UserTest extends TestCase
 
     public function testEmail(): void
     {
-        $this->assertNull($this->user->getEmail());
+        $this->assertSame('', $this->user->getEmail());
         $email = '123asd321';
         $this->user->setEmail($email);
         $this->assertSame($email, $this->user->getEmail());

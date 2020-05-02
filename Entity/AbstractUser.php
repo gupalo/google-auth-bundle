@@ -114,9 +114,42 @@ class AbstractUser implements UserInterface
         }
     }
 
+    public function __toString(): string
+    {
+        return $this->username ?? (string)$this->id;
+    }
+
+    /**
+     * Returns the salt that was originally used to encode the password.
+     *
+     * This can return null if the password was not encoded using a salt.
+     *
+     * @return string|null The salt
+     */
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Removes sensitive data from the user.
+     *
+     * This is important if, at any given point, sensitive information like
+     * the plain-text password is stored on this object.
+     */
+    public function eraseCredentials(): void
+    {
+        return;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getCreatedAt(): ?DateTime
+    {
+        return $this->createdAt;
     }
 
     public function setCreatedAt(DateTime $createdAt): self
@@ -126,9 +159,9 @@ class AbstractUser implements UserInterface
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getLastActiveAt(): ?DateTime
     {
-        return $this->createdAt;
+        return $this->lastActiveAt;
     }
 
     public function setLastActiveAt(DateTime $lastActiveAt): self
@@ -138,33 +171,28 @@ class AbstractUser implements UserInterface
         return $this;
     }
 
-    public function getLastActiveAt(): ?DateTime
-    {
-        return $this->lastActiveAt;
-    }
-
-    public function setGoogleId(string $googleId): self
-    {
-        $this->googleId = $googleId;
-
-        return $this;
-    }
-
     public function getGoogleId(): ?string
     {
-        return $this->googleId;
+        return $this->googleId ?? '';
     }
 
-    public function setGoogleAccessToken(string $googleAccessToken): self
+    public function setGoogleId(?string $googleId): self
     {
-        $this->googleAccessToken = $googleAccessToken;
+        $this->googleId = $googleId ?? '';
 
         return $this;
     }
 
-    public function getGoogleAccessToken(): ?string
+    public function getGoogleAccessToken(): string
     {
-        return $this->googleAccessToken;
+        return $this->googleAccessToken ?? '';
+    }
+
+    public function setGoogleAccessToken(?string $googleAccessToken): self
+    {
+        $this->googleAccessToken = $googleAccessToken ?? '';
+
+        return $this;
     }
 
     /**
@@ -189,7 +217,7 @@ class AbstractUser implements UserInterface
             $this->setRoles([User::ROLE_USER]);
         }
 
-        return explode(',', $this->roles);
+        return array_map('trim', explode(',', $this->roles));
     }
 
     public function setRoles(array $roles): self
@@ -198,7 +226,7 @@ class AbstractUser implements UserInterface
             $roles = [User::ROLE_USER];
         }
 
-        $this->roles = implode(',', $roles);
+        $this->roles = implode(',', array_map('trim', $roles));
 
         return $this;
     }
@@ -217,77 +245,54 @@ class AbstractUser implements UserInterface
     }
 
     /**
-     * Returns the salt that was originally used to encode the password.
-     *
-     * This can return null if the password was not encoded using a salt.
-     *
-     * @return string|null The salt
-     */
-    public function getSalt(): ?string
-    {
-        return null;
-    }
-
-    /**
      * Returns the username used to authenticate the user.
      *
      * @return string The username
      */
-    public function getUsername(): ?string
+    public function getUsername(): string
     {
-        return $this->username;
+        return $this->username ?? '';
     }
 
-    /**
-     * Removes sensitive data from the user.
-     *
-     * This is important if, at any given point, sensitive information like
-     * the plain-text password is stored on this object.
-     */
-    public function eraseCredentials(): void
+    public function setUsername(?string $username): self
     {
-        return;
-    }
-
-    public function setEnabled(bool $enabled): self
-    {
-        $this->enabled = $enabled;
+        $this->username = $username ?? '';
 
         return $this;
     }
 
-    public function getEnabled(): ?bool
+    public function getEnabled(): bool
     {
-        return $this->enabled;
+        return $this->enabled ?? false;
     }
 
-    public function setUsername(string $username): self
+    public function setEnabled(?bool $enabled): self
     {
-        $this->username = $username;
+        $this->enabled = $enabled ?? false;
 
         return $this;
     }
 
-    public function setEmail(string $email): self
+    public function getEmail(): string
     {
-        $this->email = $email;
-
-        return $this;
+        return $this->email ?? '';
     }
 
-    public function getEmail(): ?string
+    public function setEmail(?string $email): self
     {
-        return $this->email;
+        $this->email = $email ?? '';
+
+        return $this;
     }
 
     public function getApiKey(): string
     {
-        return $this->apiKey;
+        return $this->apiKey ?? '';
     }
 
-    public function setApiKey(string $apiKey): self
+    public function setApiKey(?string $apiKey): self
     {
-        $this->apiKey = $apiKey;
+        $this->apiKey = $apiKey ?? '';
 
         return $this;
     }
@@ -297,99 +302,94 @@ class AbstractUser implements UserInterface
         return $this->data ?? [];
     }
 
-    public function setData(array $data): self
+    public function setData(?array $data): self
     {
-        $this->data = $data;
+        $this->data = $data ?? [];
 
         return $this;
     }
 
     public function isApiAuth(): bool
     {
-        return $this->isApiAuth;
+        return $this->isApiAuth ?? false;
     }
 
-    public function setIsApiAuth(bool $isApiAuth): self
+    public function setIsApiAuth(?bool $isApiAuth): self
     {
-        $this->isApiAuth = $isApiAuth;
+        $this->isApiAuth = $isApiAuth ?? false;
 
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
-        return $this->name;
+        return $this->name ?? '';
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
-        $this->name = $name;
+        $this->name = $name ?? '';
 
         return $this;
     }
 
-    public function getFirstName(): ?string
+    public function getFirstName(): string
     {
-        return $this->firstName;
+        return $this->firstName ?? '';
     }
 
-    public function setFirstName(string $firstName): self
+    public function setFirstName(?string $firstName): self
     {
-        $this->firstName = $firstName;
+        $this->firstName = $firstName ?? '';
 
         return $this;
     }
 
-    public function getSurname(): ?string
+    public function getSurname(): string
     {
-        return $this->surname;
+        return $this->surname ?? '';
     }
 
-    public function setSurname(string $surname): self
+    public function setSurname(?string $surname): self
     {
-        $this->surname = $surname;
+        $this->surname = $surname ?? '';
 
         return $this;
     }
 
-    public function getPictureUrl(): ?string
+    public function getPictureUrl(): string
     {
-        return $this->pictureUrl;
+        return $this->pictureUrl ?? '';
     }
 
-    public function setPictureUrl(string $pictureUrl): self
+    public function setPictureUrl(?string $pictureUrl): self
     {
-        $this->pictureUrl = $pictureUrl;
+        $this->pictureUrl = $pictureUrl ?? '';
 
         return $this;
     }
 
-    public function isEmailVerified(): ?bool
+    public function isEmailVerified(): bool
     {
-        return $this->isEmailVerified;
+        return $this->isEmailVerified ?? false;
     }
 
-    public function setIsEmailVerified(bool $isEmailVerified): self
+    public function setIsEmailVerified(?bool $isEmailVerified): self
     {
-        $this->isEmailVerified = $isEmailVerified;
+        $this->isEmailVerified = $isEmailVerified ?? false;
 
         return $this;
     }
 
-    public function getLocale(): ?string
+    public function getLocale(): string
     {
-        return $this->locale;
+        return $this->locale ?? '';
     }
 
-    public function setLocale(string $locale): self
+    public function setLocale(?string $locale): self
     {
-        $this->locale = $locale;
+        $this->locale = $locale ?? '';
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return $this->username ?? (string)$this->id;
     }
 }
