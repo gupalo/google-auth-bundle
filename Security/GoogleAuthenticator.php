@@ -393,12 +393,12 @@ class GoogleAuthenticator extends SocialAuthenticator
         );
     }
 
-    private function createUser($email, $username): AbstractUser
+    private function createUser(?string $email, ?string $username): AbstractUser
     {
         $user = $this->userManager->createUser()
             ->setEnabled(false)
-            ->setEmail($email)
-            ->setUsername($username)
+            ->setEmail($email ?? '')
+            ->setUsername($username ?? '')
             ->setRoles([User::ROLE_USER])
             ->setData([]);
 
