@@ -23,6 +23,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\DisabledException;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Throwable;
 
@@ -144,6 +146,12 @@ class GoogleAuthenticator extends SocialAuthenticator
             if ($user instanceof User) {
                 $user->setIsApiAuth(true);
             }
+            if (!$user->getEnabled()) {
+                $e = new DisabledException();
+                $e->setUser($user);
+
+                throw $e;
+            }
 
             return $user;
         }
@@ -154,6 +162,13 @@ class GoogleAuthenticator extends SocialAuthenticator
         // 1) have they logged in with Google before? Easy!
         $existingUser = $this->userManager->findOneByGoogleId($googleUser->getId());
         if ($existingUser) {
+            if (!$existingUser->getEnabled()) {
+                $e = new DisabledException();
+                $e->setUser($existingUser);
+
+                throw $e;
+            }
+
             return $existingUser;
         }
 
@@ -167,7 +182,7 @@ class GoogleAuthenticator extends SocialAuthenticator
             $domain = mb_strtolower(preg_replace('#^.*@#', '', $email));
 
             if (!empty($this->googleDomains) && !in_array($domain, $this->googleDomains, true)) {
-                throw new AuthenticationException();
+                throw new UnsupportedUserException();
             }
 
             $user = $this->createUser($email, $username);
@@ -200,13 +215,26 @@ class GoogleAuthenticator extends SocialAuthenticator
 
         $user->setIsApiAuth(false);
 
+        if (!$user->getEnabled()) {
+            $e = new DisabledException();
+            $e->setUser($user);
+
+            throw $e;
+        }
+
         return $user;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         if ($this->getApiKeyFromRequest($request)) {
-            return new JsonResponse(['message' => strtr($exception->getMessageKey(), $exception->getMessageData())], Response::HTTP_FORBIDDEN);
+            return JsonResponse::create(['message' => strtr($exception->getMessageKey(), $exception->getMessageData())], Response::HTTP_FORBIDDEN);
+        }
+        if ($exception instanceof UnsupportedUserException) {
+            return Response::create('unsupported', Response::HTTP_FORBIDDEN);
+        }
+        if ($exception instanceof DisabledException) {
+            return Response::create('disabled', Response::HTTP_FORBIDDEN);
         }
 
         $this->saveAuthenticationErrorToSession($request, $exception);
@@ -399,8 +427,11 @@ class GoogleAuthenticator extends SocialAuthenticator
             ->setEnabled(false)
             ->setEmail($email ?? '')
             ->setUsername($username ?? '')
-            ->setRoles([User::ROLE_USER])
             ->setData([]);
+
+        if (!$user->getRoles()) {
+            $user->setRoles([User::ROLE_USER]);
+        }
 
         if ($this->isAllowedUsername($username)) {
             $user->setEnabled(true);
