@@ -12,7 +12,9 @@ Add env vars:
 
 * `GOOGLE_AUTH_APP_ID`: from Google Console
 * `GOOGLE_AUTH_APP_SECRET`: from Google Console
-* `GOOGLE_AUTH_DOMAIN`: which domain is allowed to login; "*" if all domains; 'user.dev' to skip google auth and login all as ROLE_USER
+* `GOOGLE_AUTH_DOMAIN`: which domain is allowed to login; 'user.dev' to skip google auth and login all as ROLE_USER;
+                        "*" if all domains (only GSuite);
+                        override `google_auth_domain: null` if you need to allow really all domains including "gmail.com"
 * `GOOGLE_AUTH_USERS`: which users should be autoactivated; empty if no users
 * `GOOGLE_AUTH_ADMINS`: which users should be autoactivated as admins; empty if none
 * `GOOGLE_AUTH_DEFAULT_APIKEY`: set if you want to autocreate "api@example.com" user with this key
@@ -35,6 +37,7 @@ parameters:
     google_auth_admins: '%env(string:GOOGLE_AUTH_ADMINS)%'
     google_auth_default_apikey: '%env(string:GOOGLE_AUTH_DEFAULT_APIKEY)%'
 ```
+
 
 Install
 
