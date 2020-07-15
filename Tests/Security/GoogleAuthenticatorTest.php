@@ -1,7 +1,12 @@
 <?php
 
+/** @noinspection NullPointerExceptionInspection */
+/** @noinspection PhpParamsInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+
 namespace Gupalo\GoogleAuthBundle\Tests\Security;
 
+use DateTime;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\Provider\GoogleClient;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -27,8 +32,7 @@ class GoogleAuthenticatorTest extends TestCase
 {
     use ProphecyTrait;
 
-    /** @var GoogleAuthenticator */
-    private $authenticator;
+    private GoogleAuthenticator $authenticator;
 
     /** @var ClientRegistry */
     private $clientRegistry;
@@ -51,7 +55,8 @@ class GoogleAuthenticatorTest extends TestCase
             $this->clientRegistry->reveal(),
             $this->router->reveal(),
             $this->userManager->reveal(),
-            $this->googleDomain
+            $this->googleDomain,
+            'user1'
         );
     }
 
@@ -62,7 +67,7 @@ class GoogleAuthenticatorTest extends TestCase
         $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($client->reveal());
 
         $request = Request::create('/some/path');
-        $this->assertNull($this->authenticator->getCredentials($request));
+        self::assertNull($this->authenticator->getCredentials($request));
     }
 
     public function testGetCredentials(): void
@@ -75,7 +80,7 @@ class GoogleAuthenticatorTest extends TestCase
 
         $result = $this->authenticator->getCredentials($request);
 
-        $this->assertSame($token, $result);
+        self::assertSame($token, $result);
     }
 
     public function testGetCredentialsException(): void
@@ -97,12 +102,12 @@ class GoogleAuthenticatorTest extends TestCase
         $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
         $googleUser = new GoogleUser(['sub' => '123dsa213']);
         $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
-        $user = (new User())->setUsername('user1');
+        $user = (new User())->setUsername('user1')->setEnabled(true);
         $this->userManager->findOneByGoogleId('123dsa213')->shouldBeCalledTimes(1)->willReturn($user);
 
         $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
 
-        $this->assertEquals($user, $result);
+        self::assertEquals($user, $result);
     }
 
     public function testGetUser_UserRegisteredViaGoogleNotAdminUser(): void
@@ -112,17 +117,21 @@ class GoogleAuthenticatorTest extends TestCase
         $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
         $googleUser = new GoogleUser(['sub' => '123dsa213']);
         $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
-        $user = (new User())->setGoogleAccessToken('token')->setUsername('user1');
+        $user = (new User())
+            ->setGoogleAccessToken('token')
+            ->setUsername('user1')
+            ->setEnabled(true);
         $this->userManager->findOneByGoogleId('123dsa213')->shouldBeCalledTimes(1)->willReturn($user);
 
         $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
 
-        $this->assertEquals($user, $result);
-        $this->assertEquals([User::ROLE_USER], $result->getRoles());
+        self::assertEquals($user, $result);
+        self::assertEquals([User::ROLE_USER], $result->getRoles());
     }
 
     public function testGetUser_CreateNewUserInvalidEmilException(): void
     {
+        /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
         $this->expectException(\Symfony\Component\Security\Core\Exception\AuthenticationException::class);
 
         $credentials = new AccessToken(['access_token' => 'token']);
@@ -138,7 +147,7 @@ class GoogleAuthenticatorTest extends TestCase
 
         $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
 
-        $this->assertEquals('user', $result);
+        self::assertEquals('user', $result);
     }
 
     public function testGetUser_CreateNewUser(): void
@@ -161,22 +170,27 @@ class GoogleAuthenticatorTest extends TestCase
         $this->userManager->findOneByEmail('user1@example.com')->shouldBeCalledTimes(1)->willReturn(null);
         $user = new User();
         $this->userManager->createUser()->shouldBeCalledTimes(1)->willReturn($user);
-        $user->setEnabled(true)->setEmail('user1@example.com')->setUsername('user1')->setGoogleId('123asd321');
+        $user
+            ->setEnabled(true)
+            ->setEmail('user1@example.com')
+            ->setUsername('user1')
+            ->setGoogleId('123asd321');
         /** @noinspection PhpParamsInspection */
-        $this->userManager->saveUser(Argument::that(function(User $user) {
-            $this->assertFalse($user->getEnabled());
-            $this->assertEquals('user1@example.com', $user->getEmail());
-            $this->assertEquals('user1', $user->getUsername());
-            $this->assertEquals('123asd321', $user->getGoogleId());
-            $this->assertEquals(time(), $user->getCreatedAt()->getTimestamp(), 2);
-            $this->assertEquals(time(), $user->getLastActiveAt()->getTimestamp(), 2);
+        $this->userManager->saveUser(Argument::that(static function(User $user) {
+            self::assertTrue($user->getEnabled());
+            self::assertEquals('user1@example.com', $user->getEmail());
+            self::assertEquals('user1', $user->getUsername());
+            self::assertEquals('123asd321', $user->getGoogleId());
+            self::assertEquals(time(), $user->getCreatedAt()->getTimestamp(), 2);
+            self::assertEquals(time(), $user->getLastActiveAt()->getTimestamp(), 2);
+
             return true;
         }))->shouldBeCalledTimes(1);
 
         $userProvider = $this->prophesize(UserProviderInterface::class);
         $result = $this->authenticator->getUser($credentials, $userProvider->reveal());
 
-        $this->assertEquals($user, $result);
+        self::assertEquals($user, $result);
     }
 
     public function testGetUser_RegisteredNotByGoogle_NotAdmin(): void
@@ -196,25 +210,29 @@ class GoogleAuthenticatorTest extends TestCase
         ]);
         $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
         $this->userManager->findOneByGoogleId('123dsa213')->shouldBeCalledTimes(1)->willReturn(null);
-        $user = (new User())->setUsername('user2')->setCreatedAt(new \DateTime('2016-01-01'))->setLastActiveAt(new \DateTime('2016-10-10'));
+        $user = (new User())
+            ->setUsername('user2')
+            ->setCreatedAt(new DateTime('2016-01-01'))
+            ->setLastActiveAt(new DateTime('2016-10-10'))
+            ->setEnabled(true);
         $this->userManager->findOneByEmail('email@test.com')->shouldBeCalledTimes(1)->willReturn($user);
         /** @noinspection PhpParamsInspection */
-        $this->userManager->saveUser(Argument::that(function(User $arg) use ($user) {
-            $this->assertEquals($arg, $user);
+        $this->userManager->saveUser(Argument::that(static function(User $arg) use ($user) {
+            self::assertEquals($arg, $user);
             return true;
         }))->shouldBeCalledTimes(1);
 
         $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
 
-        $this->assertEquals($user, $result);
-        $this->assertEquals([User::ROLE_USER], $result->getRoles());
+        self::assertEquals($user, $result);
+        self::assertEquals([User::ROLE_USER], $result->getRoles());
     }
 
     public function testCheckCredential(): void
     {
         $result =$this->authenticator->checkCredentials('credentials', $this->prophesize(UserInterface::class)->reveal());
 
-        $this->assertTrue($result);
+        self::assertTrue($result);
     }
 
     public function testOnAuthenticationFailure(): void
@@ -227,8 +245,8 @@ class GoogleAuthenticatorTest extends TestCase
 
         $result = $this->authenticator->onAuthenticationFailure($request, new AuthenticationException());
 
-        $this->assertInstanceOf(RedirectResponse::class, $result);
-        $this->assertEquals('/login/url', $result->getTargetUrl());
+        self::assertInstanceOf(RedirectResponse::class, $result);
+        self::assertEquals('/login/url', $result->getTargetUrl());
     }
 
     public function testOnAuthenticationSuccess_NoPreviousUrl(): void
@@ -238,6 +256,7 @@ class GoogleAuthenticatorTest extends TestCase
         $session = $this->prophesize(Session::class);
         $request->setSession($session->reveal());
         $session->get('_security.'.$providerKey.'.target_path')->shouldBeCalledTimes(1)->willReturn(null);
+        /** @noinspection PhpRouteMissingInspection */
         $this->router->generate('homepage')->shouldBeCalledTimes(1)->willReturn('/homepage');
 
         $result = $this->authenticator->onAuthenticationSuccess(
@@ -246,8 +265,8 @@ class GoogleAuthenticatorTest extends TestCase
             $providerKey
         );
 
-        $this->assertInstanceOf(RedirectResponse::class, $result);
-        $this->assertEquals('/homepage', $result->getTargetUrl());
+        self::assertInstanceOf(RedirectResponse::class, $result);
+        self::assertEquals('/homepage', $result->getTargetUrl());
     }
 
     public function testOnAuthenticationSuccess_WithPreviousUrl(): void
@@ -264,8 +283,8 @@ class GoogleAuthenticatorTest extends TestCase
             $providerKey
         );
 
-        $this->assertInstanceOf(RedirectResponse::class, $result);
-        $this->assertEquals('/prev/page', $result->getTargetUrl());
+        self::assertInstanceOf(RedirectResponse::class, $result);
+        self::assertEquals('/prev/page', $result->getTargetUrl());
     }
 
     public function testStart(): void
@@ -275,7 +294,7 @@ class GoogleAuthenticatorTest extends TestCase
 
         $result = $this->authenticator->start($request);
 
-        $this->assertInstanceOf(RedirectResponse::class, $result);
-        $this->assertEquals('/homepage', $result->getTargetUrl());
+        self::assertInstanceOf(RedirectResponse::class, $result);
+        self::assertEquals('/homepage', $result->getTargetUrl());
     }
 }

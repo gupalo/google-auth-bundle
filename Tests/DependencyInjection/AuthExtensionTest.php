@@ -33,7 +33,7 @@ class AuthExtensionTest extends TestCase
                 ]
             ]
         ];
-        $this->assertEquals([0 => $expected], $container->getExtensionConfig('knpu_oauth2_client'));
+        self::assertEquals([0 => $expected], $container->getExtensionConfig('knpu_oauth2_client'));
     }
 
     public function testLoad(): void
@@ -50,6 +50,6 @@ class AuthExtensionTest extends TestCase
             'google_auth.security.google_authenticator',
             'twig.security_extension',
         ];
-        $this->assertEquals($expectedServices, array_keys($container->getDefinitions()));
+        self::assertEquals($expectedServices, array_keys($container->getDefinitions()));
     }
 }

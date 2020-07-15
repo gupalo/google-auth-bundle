@@ -1,5 +1,8 @@
 <?php
 
+/** @noinspection PhpParamsInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+
 namespace Gupalo\GoogleAuthBundle\Tests\Model;
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
@@ -46,14 +49,14 @@ class UserManagerTest extends TestCase
 
     public function testGetClass(): void
     {
-        $this->assertEquals(self::USER_CLASS, $this->userManager->getClass());
+        self::assertEquals(self::USER_CLASS, $this->userManager->getClass());
     }
 
     public function testCreateUser(): void
     {
         $user = $this->userManager->createUser();
-        $this->assertEquals(time(), $user->getCreatedAt()->getTimestamp(), 2);
-        $this->assertEquals(time(), $user->getLastActiveAt()->getTimestamp(), 2);
+        self::assertEquals(time(), $user->getCreatedAt()->getTimestamp(), 2);
+        self::assertEquals(time(), $user->getLastActiveAt()->getTimestamp(), 2);
     }
 
     public function testSaveUser(): void
@@ -73,7 +76,7 @@ class UserManagerTest extends TestCase
 
         $this->repository->findOneByGoogleId($googleId)->shouldBeCalledTimes(1)->willReturn($user);
 
-        $this->assertSame($user, $this->userManager->findOneByGoogleId($googleId));
+        self::assertSame($user, $this->userManager->findOneByGoogleId($googleId));
     }
 
     public function testFindOneByEmail(): void
@@ -83,6 +86,6 @@ class UserManagerTest extends TestCase
 
         $this->repository->findOneByEmail($email)->shouldBeCalledTimes(1)->willReturn($user);
 
-        $this->assertSame($user, $this->userManager->findOneByEmail($email));
+        self::assertSame($user, $this->userManager->findOneByEmail($email));
     }
 }
