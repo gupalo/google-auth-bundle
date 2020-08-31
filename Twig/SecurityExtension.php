@@ -9,9 +9,9 @@ use Twig\TwigFunction;
 
 class SecurityExtension extends AbstractExtension
 {
-    private TokenStorageInterface $tokenStorage;
+    private ?TokenStorageInterface $tokenStorage;
 
-    public function __construct(TokenStorageInterface $tokenStorage)
+    public function __construct(?TokenStorageInterface $tokenStorage = null)
     {
         $this->tokenStorage = $tokenStorage;
     }
@@ -25,12 +25,8 @@ class SecurityExtension extends AbstractExtension
 
     public function apiKey(): string
     {
-        $token = $this->tokenStorage->getToken();
-        if (!$token) {
-            return '';
-        }
-        $username = $token->getUsername();
-        if (!$username) {
+        $token = $this->tokenStorage ? $this->tokenStorage->getToken() : null;
+        if (!$token || !$token->getUsername()) {
             return '';
         }
 
