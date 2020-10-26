@@ -104,14 +104,21 @@ security:
         - { path: ^/, roles: ROLE_USER }
 ```
 
-4) Enable GoogleAuthBundle routing. Add to `app/config/routes/google_auth.yaml`
+4) Enable GoogleAuthBundle routing. Add to `config/routes/google_auth.yaml`
 
 ```yaml
 google_auth:
     resource: "@GoogleAuthBundle/Resources/config/routing/routing.yaml"
 ```
 
-5) Update your database schema
+5) Create `config/packages/google_auth.yaml`
+
+```yaml
+imports:
+    - {resource: '@GoogleAuthBundle/Resources/config/services.yaml'}
+```
+
+6) Update your database schema
 
 
 Dev
