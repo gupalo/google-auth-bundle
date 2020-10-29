@@ -34,8 +34,8 @@
                     </div>
                 </td>
                 <td class="text-nowrap"><span class="uid">{{ item.id }}</span></td>
-                <td class="text-nowrap">{{ item.createdAt ? item.createdAt|date|format('Y-m-d H:i') : '-' }}</td>
-                <td class="text-nowrap">{{ item.lastActiveAt ? item.lastActiveAt|date|format('Y-m-d H:i') : '-' }}</td>
+                <td class="text-nowrap">{{ item.createdAt ? item.createdAt|date('Y-m-d H:i') : '-' }}</td>
+                <td class="text-nowrap">{{ item.lastActiveAt ? item.lastActiveAt|date('Y-m-d H:i') : '-' }}</td>
                 <td class="text-nowrap">{{ item.username }}</td>
                 <td class="text-nowrap">{{ item.email }}</td>
                 <td class="text-nowrap">{{ item.roles|join(', ') }}</td>
