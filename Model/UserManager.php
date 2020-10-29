@@ -68,4 +68,17 @@ class UserManager
     {
         return $this->repository->findOneByApiKey($email);
     }
+
+    /**
+     * @return AbstractUser[]
+     */
+    public function findAll(): array
+    {
+        return $this->repository->findBy([], ['username' => 'ASC']);
+    }
+
+    public function find(int $id): ?AbstractUser
+    {
+        return $this->repository->find($id);
+    }
 }

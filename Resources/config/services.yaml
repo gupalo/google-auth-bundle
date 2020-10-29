@@ -28,6 +28,7 @@ services:
             - [setContainer, ["@service_container"]]
         arguments:
             - '@Gupalo\BrowserNotifier\BrowserNotifier'
+            - '@google_auth.model.user_manager'
 
     google_auth.model.user_manager:
         class: Gupalo\GoogleAuthBundle\Model\UserManager

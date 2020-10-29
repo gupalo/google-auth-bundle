@@ -3,57 +3,38 @@
 namespace Gupalo\GoogleAuthBundle\Controller;
 
 use Gupalo\BrowserNotifier\BrowserNotifier;
-use Doctrine\ORM\EntityManagerInterface;
 use Gupalo\GoogleAuthBundle\Form\UserType;
-use Gupalo\GoogleAuthBundle\Repository\UserRepository;
+use Gupalo\GoogleAuthBundle\Model\UserManager;
 use Gupalo\UidGenerator\UidGenerator;
 use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Throwable;
 
 class UserController extends AbstractController
 {
     private BrowserNotifier $browserNotifier;
 
-    public function __construct(BrowserNotifier $browserNotifier)
+    private UserManager $userManager;
+
+    public function __construct(BrowserNotifier $browserNotifier, UserManager $userManager)
     {
         $this->browserNotifier = $browserNotifier;
+        $this->userManager = $userManager;
     }
 
-    /**
-     * @Route("/admin/users", name="admin_user_index")
-     * @param UserRepository $userRepository
-     * @return Response
-     */
-    public function index(
-        UserRepository $userRepository
-    ): Response {
-        $items = $userRepository->findBy([], ['username' => 'ASC']);
-
+    public function index(): Response
+    {
         return $this->render('@GoogleAuth/user/index.html.twig', [
-            'items' => $items,
+            'items' => $this->userManager->findAll(),
         ]);
     }
 
-    /**
-     * @Route("/admin/users/{username}", name="admin_user_edit")
-     * @param string $username
-     * @param Request $request
-     * @param UserRepository $repository
-     * @param EntityManagerInterface $entityManager
-     * @return Response
-     */
-    public function edit(
-        string $username,
-        Request $request,
-        UserRepository $repository,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $user = $repository->findOneByUsername($username);
+    public function edit(string $username, Request $request): Response
+    {
+        $user = $this->userManager->findOneByUsername($username);
         if (!$user) {
             $this->browserNotifier->warning(sprintf('Cannot find User "%s"', $username));
 
@@ -67,9 +48,8 @@ class UserController extends AbstractController
             if (!$user->getApiKey()) {
                 $user->setApiKey(UidGenerator::generate());
             }
-            $entityManager->persist($user);
             try {
-                $entityManager->flush();
+                $this->userManager->saveUser($user);
                 $this->browserNotifier->success(sprintf('Updated User "%s"', $user->getUsername()));
 
                 return $this->redirectToRoute('admin_user_index');
@@ -83,29 +63,16 @@ class UserController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/admin/users/{id}/enableDisable", name="admin_user_enable_disable")
-     * @param int $id
-     * @param Request $request
-     * @param EntityManagerInterface $entityManager
-     * @param UserRepository $userRepository
-     * @return JsonResponse
-     */
-    public function enableDisable(
-        int $id,
-        Request $request,
-        EntityManagerInterface $entityManager,
-        UserRepository $userRepository
-    ): JsonResponse {
+    public function enableDisable(int $id, Request $request): JsonResponse
+    {
         try {
-            $user = $userRepository->find($id);
+            $user = $this->userManager->find($id);
             if (!$user) {
                 throw new InvalidArgumentException('user_not_found');
             }
 
             $user->setEnabled($request->request->get('enabled'));
-
-            $entityManager->flush();
+            $this->userManager->saveUser($user);
 
             $data = ['status' => 'ok', 'message' => '', 'enabled' => $user->getEnabled() ? 1 : 0];
         } catch (Throwable $e) {
