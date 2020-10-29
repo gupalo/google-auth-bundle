@@ -17,18 +17,19 @@
     },
     "require": {
         "php": ">=7.4",
+        "doctrine/doctrine-bundle": "^2.1",
         "doctrine/orm": "^2.7|^3.0",
-        "league/oauth2-google": "^3.0",
         "knpuniversity/oauth2-client-bundle": "^2.1",
+        "league/oauth2-google": "^3.0",
+        "symfony/security-core": "^5.1",
+        "symfony/security-guard": "^5.1",
         "symfony/yaml": "^5.0",
         "twig/twig": "^3.0"
     },
     "require-dev": {
         "phpspec/prophecy-phpunit": "^2.0",
-        "phpunit/phpunit": "^9.1",
-        "roave/security-advisories": "dev-master",
-        "symfony/security-guard": "^5.0",
-        "doctrine/doctrine-bundle": "^2.0"
+        "phpunit/phpunit": "^9.4",
+        "roave/security-advisories": "dev-master"
     },
     "config": {
         "preferred-install": {
