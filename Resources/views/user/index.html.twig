@@ -53,11 +53,11 @@
     <script>
         function initUserToggles() {
             document.querySelectorAll('input[type="checkbox"][data-toggle="toggle-enabled"][data-href]:not([data-disabled="disabled"]):not([data-binded])').forEach(el => {
+                el.removeAttribute('disabled');
                 el.addEventListener('click', e => {
                     let data = {
                         enabled: el.checked ? 1 : 0
                     };
-                    console.log('before', data);
                     el.setAttribute('disabled', 'disabled');
                     fetch(el.getAttribute('data-href'), {
                         method: 'POST',
@@ -72,10 +72,6 @@
                     }).then(r => {
                         el.removeAttribute('disabled');
                         el.checked = r.enabled;
-                        console.log('after', {
-                            js: r,
-                            enabled: el.checked ? 1 : 0
-                        });
                     }).catch(() => {
                         console.error('error toggle enabled');
                     });
