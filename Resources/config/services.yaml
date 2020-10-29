@@ -21,6 +21,13 @@ services:
         public: true
         calls:
             - [setContainer, ["@service_container"]]
+    google_auth.controller.user:
+        class: Gupalo\GoogleAuthBundle\Controller\UserController
+        public: true
+        calls:
+            - [setContainer, ["@service_container"]]
+        arguments:
+            - '@Gupalo\BrowserNotifier\BrowserNotifier'
 
     google_auth.model.user_manager:
         class: Gupalo\GoogleAuthBundle\Model\UserManager

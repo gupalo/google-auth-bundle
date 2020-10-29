@@ -17,3 +17,16 @@ google_auth_security_logout:
 google_auth_security_logout_force:
     path: /auth/logout/force
     defaults: { _controller: 'google_auth.controller.google::forceLogout' }
+
+
+admin_user_index:
+    path: /admin/users
+    defaults: { _controller: 'google_auth.controller.user::index' }
+
+admin_user_edit:
+    path: /admin/users/{username}
+    defaults: { _controller: 'google_auth.controller.user::edit' }
+
+admin_user_enable_disable:
+    path: /admin/users/{id}/enableDisable
+    defaults: { _controller: 'google_auth.controller.user::enableDisable' }

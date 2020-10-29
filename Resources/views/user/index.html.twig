@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1 class="float-left">Users <span class="badge badge-light">{{ items|length }}</span></h1>
+    <div class="clearfix"></div>
+
+    <table class="table table-striped table-hover table-responsive-md table-sm dataTable"
+           style="min-width: 20%" data-order="[[ 5, &quot;asc&quot; ]]">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">Enabled</th>
+            <th scope="col">UID</th>
+            <th scope="col">Created</th>
+            <th scope="col">Last Active</th>
+            <th scope="col">Username</th>
+            <th scope="col">Email</th>
+            <th scope="col">Roles</th>
+            <th scope="col">Full Name</th>
+            <th scope="col">Locale</th>
+            <th scope="col">API Key</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+            <tr {{ item.id == app.user.id ? 'class="table-success"' }}>
+                <td class="text-nowrap">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" data-toggle="toggle-enabled"
+                               data-href="{{ path('admin_user_enable_disable', {id: item.id}) }}"
+                               class="custom-control-input" id="enabled_{{ item.id }}"
+                               disabled {{ item.enabled ? ' checked':'' }}{{ item.id == app.user.id ? ' data-disabled="disabled"':'' }}>
+                        <label class="custom-control-label" for="enabled_{{ item.id }}"></label>
+                    </div>
+                </td>
+                <td class="text-nowrap"><span class="uid">{{ item.id }}</span></td>
+                <td class="text-nowrap">{{ item.createdAt|date_full }}</td>
+                <td class="text-nowrap">{{ item.lastActiveAt|date_full }}</td>
+                <td class="text-nowrap">{{ item.username }}</td>
+                <td class="text-nowrap">{{ item.email }}</td>
+                <td class="text-nowrap">{{ item.roles|join(', ') }}</td>
+                <td class="text-nowrap">{{ item.name }}</td>
+                <td class="text-nowrap">{{ item.locale }}</td>
+                <td class="text-nowrap text-monospace">{{ item.apiKey }}</td>
+                <td class="text-nowrap">
+                    <a href="{{ path('admin_user_edit', {username: item.username}) }}" class="btn btn-sm btn-primary">Edit</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

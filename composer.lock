@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab7574663121edc9e25ba57d19be95c2",
+    "content-hash": "57f8cf143089d9790da2e63372f4b0bd",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1214,6 +1214,85 @@
                 "source": "https://github.com/doctrine/sql-formatter/tree/1.1.x"
             },
             "time": "2020-07-30T16:57:33+00:00"
+        },
+        {
+            "name": "gupalo/browser-notifier",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gupalo/browser-notifier.git",
+                "reference": "29a03358b33747c58ab2995cc917456402cbdadf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gupalo/browser-notifier/zipball/29a03358b33747c58ab2995cc917456402cbdadf",
+                "reference": "29a03358b33747c58ab2995cc917456402cbdadf",
+                "shasum": ""
+            },
+            "require": {
+                "psr/log": "^1.1",
+                "symfony/notifier": "^5.0",
+                "twig/twig": "^3.0"
+            },
+            "require-dev": {
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpunit/phpunit": "9.1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gupalo\\BrowserNotifier\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Extension of Symfony Notifier for browsers",
+            "support": {
+                "issues": "https://github.com/gupalo/browser-notifier/issues",
+                "source": "https://github.com/gupalo/browser-notifier/tree/1.1.2"
+            },
+            "time": "2020-06-16T14:01:38+00:00"
+        },
+        {
+            "name": "gupalo/uidgenerator",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gupalo/uidgenerator.git",
+                "reference": "8418bb3345caadcdaf11fe82c631e242e0d4fd87"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gupalo/uidgenerator/zipball/8418bb3345caadcdaf11fe82c631e242e0d4fd87",
+                "reference": "8418bb3345caadcdaf11fe82c631e242e0d4fd87",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpunit/phpunit": "^9.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Gupalo\\UidGenerator\\": "src/UidGenerator/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "UID Generator",
+            "support": {
+                "issues": "https://github.com/gupalo/uidgenerator/issues",
+                "source": "https://github.com/gupalo/uidgenerator/tree/1.1.1"
+            },
+            "time": "2020-05-02T19:05:45+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -2998,6 +3077,107 @@
             "time": "2020-10-24T12:01:57+00:00"
         },
         {
+            "name": "symfony/form",
+            "version": "v5.1.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/form.git",
+                "reference": "3f61496220b9f8672ede9b9acfb87a06c0c752f2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/form/zipball/3f61496220b9f8672ede9b9acfb87a06c0c752f2",
+                "reference": "3f61496220b9f8672ede9b9acfb87a06c0c752f2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.5",
+                "symfony/deprecation-contracts": "^2.1",
+                "symfony/event-dispatcher": "^4.4|^5.0",
+                "symfony/intl": "^4.4|^5.0",
+                "symfony/options-resolver": "^5.1",
+                "symfony/polyfill-ctype": "~1.8",
+                "symfony/polyfill-mbstring": "~1.0",
+                "symfony/polyfill-php80": "^1.15",
+                "symfony/property-access": "^5.0.8",
+                "symfony/service-contracts": "^1.1|^2"
+            },
+            "conflict": {
+                "phpunit/phpunit": "<5.4.3",
+                "symfony/console": "<4.4",
+                "symfony/dependency-injection": "<4.4",
+                "symfony/doctrine-bridge": "<4.4",
+                "symfony/error-handler": "<4.4.5",
+                "symfony/framework-bundle": "<4.4",
+                "symfony/http-kernel": "<4.4",
+                "symfony/intl": "<4.4",
+                "symfony/translation": "<4.4",
+                "symfony/translation-contracts": "<1.1.7",
+                "symfony/twig-bridge": "<4.4"
+            },
+            "require-dev": {
+                "doctrine/collections": "~1.0",
+                "symfony/config": "^4.4|^5.0",
+                "symfony/console": "^4.4|^5.0",
+                "symfony/dependency-injection": "^4.4|^5.0",
+                "symfony/expression-language": "^4.4|^5.0",
+                "symfony/http-foundation": "^4.4|^5.0",
+                "symfony/http-kernel": "^4.4|^5.0",
+                "symfony/security-csrf": "^4.4|^5.0",
+                "symfony/translation": "^4.4|^5.0",
+                "symfony/validator": "^4.4.12|^5.1.6",
+                "symfony/var-dumper": "^4.4|^5.0"
+            },
+            "suggest": {
+                "symfony/security-csrf": "For protecting forms against CSRF attacks.",
+                "symfony/twig-bridge": "For templating with Twig.",
+                "symfony/validator": "For form validation."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Form\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Form Component",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/form/tree/v5.1.8"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-10-28T05:25:38+00:00"
+        },
+        {
             "name": "symfony/framework-bundle",
             "version": "v5.1.8",
             "source": {
@@ -3407,6 +3587,231 @@
             "time": "2020-10-28T05:55:23+00:00"
         },
         {
+            "name": "symfony/intl",
+            "version": "v5.1.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/intl.git",
+                "reference": "e353c6c37afa1ff90739b3941f60ff9fa650eec3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/intl/zipball/e353c6c37afa1ff90739b3941f60ff9fa650eec3",
+                "reference": "e353c6c37afa1ff90739b3941f60ff9fa650eec3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.5",
+                "symfony/polyfill-intl-icu": "~1.0",
+                "symfony/polyfill-php80": "^1.15"
+            },
+            "require-dev": {
+                "symfony/filesystem": "^4.4|^5.0"
+            },
+            "suggest": {
+                "ext-intl": "to use the component with locales other than \"en\""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Intl\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ],
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bernhard Schussek",
+                    "email": "bschussek@gmail.com"
+                },
+                {
+                    "name": "Eriksen Costa",
+                    "email": "eriksen.costa@infranology.com.br"
+                },
+                {
+                    "name": "Igor Wiedler",
+                    "email": "igor@wiedler.ch"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "A PHP replacement layer for the C intl extension that includes additional data from the ICU library.",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "i18n",
+                "icu",
+                "internationalization",
+                "intl",
+                "l10n",
+                "localization"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/intl/tree/v5.1.8"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-10-24T12:01:57+00:00"
+        },
+        {
+            "name": "symfony/notifier",
+            "version": "v5.1.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/notifier.git",
+                "reference": "7beeb0122548109126aa74f97b7d03c0f95e594d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/notifier/zipball/7beeb0122548109126aa74f97b7d03c0f95e594d",
+                "reference": "7beeb0122548109126aa74f97b7d03c0f95e594d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.5",
+                "symfony/polyfill-php80": "^1.15"
+            },
+            "conflict": {
+                "symfony/http-kernel": "<4.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Notifier\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "A library to notify messages",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "notification",
+                "notifier"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/notifier/tree/v5.1.8"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-10-24T12:03:25+00:00"
+        },
+        {
+            "name": "symfony/options-resolver",
+            "version": "v5.1.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/options-resolver.git",
+                "reference": "c6a02905e4ffc7a1498e8ee019db2b477cd1cc02"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/c6a02905e4ffc7a1498e8ee019db2b477cd1cc02",
+                "reference": "c6a02905e4ffc7a1498e8ee019db2b477cd1cc02",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.5",
+                "symfony/deprecation-contracts": "^2.1",
+                "symfony/polyfill-php80": "^1.15"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\OptionsResolver\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony OptionsResolver Component",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "config",
+                "configuration",
+                "options"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/options-resolver/tree/v5.1.8"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-10-24T12:01:57+00:00"
+        },
+        {
             "name": "symfony/polyfill-ctype",
             "version": "v1.20.0",
             "source": {
@@ -3549,6 +3954,85 @@
             ],
             "support": {
                 "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.20.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-10-23T14:02:19+00:00"
+        },
+        {
+            "name": "symfony/polyfill-intl-icu",
+            "version": "v1.20.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-intl-icu.git",
+                "reference": "c44d5bf6a75eed79555c6bf37505c6d39559353e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-intl-icu/zipball/c44d5bf6a75eed79555c6bf37505c6d39559353e",
+                "reference": "c44d5bf6a75eed79555c6bf37505c6d39559353e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1",
+                "symfony/intl": "~2.3|~3.0|~4.0|~5.0"
+            },
+            "suggest": {
+                "ext-intl": "For best performance"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.20-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for intl's ICU-related data and classes",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "icu",
+                "intl",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-intl-icu/tree/v1.20.0"
             },
             "funding": [
                 {

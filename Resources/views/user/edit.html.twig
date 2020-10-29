@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Edit User</h1>
+
+    {{ form_start(form) }}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-12">{{ form_row(form.username) }}</div>
+                <div class="col-md-12">{{ form_row(form.enabled) }}</div>
+                <div class="col-md-12">{{ form_row(form.apiKey) }}</div>
+                <div class="col-md-12">{{ form_row(form.roles) }}</div>
+                <div class="col-md-12">{{ form_row(form.data) }}</div>
+                <div class="col-md-12">{{ form_row(form.save) }}</div>
+            </div>
+        </div>
+    </div>
+    {{ form_end(form, {render_rest: false}) }}
+{% endblock %}
