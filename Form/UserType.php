@@ -16,9 +16,9 @@ class UserType extends AbstractType
 {
     private JsonYamlTransformer $jsonYamlTransformer;
 
-    public function __construct(JsonYamlTransformer $jsonYamlTransformer)
+    public function __construct()
     {
-        $this->jsonYamlTransformer = $jsonYamlTransformer;
+        $this->jsonYamlTransformer = new JsonYamlTransformer();
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

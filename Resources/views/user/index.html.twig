@@ -49,4 +49,23 @@
         {% endfor %}
         </tbody>
     </table>
+
+    <script>
+        $(() => {
+            $('[data-toggle="toggle-enabled"][data-disabled!="disabled"]').removeAttr('disabled').on('click', e => {
+                //e.preventDefault();
+                let $this = $(e.target);
+                $this.attr('disabled', 'disabled');
+                $.post($this.data('href'), {
+                    enabled: $this.is(':checked') ? 1 : 0
+                }, r => {
+                    //console.log(r);
+                    $this.removeAttr('disabled');
+                    $this.prop('checked', r.enabled);
+                }).fail(() => {
+                    console.error('error toggle enabled');
+                });
+            })
+        })
+    </script>
 {% endblock %}
