@@ -51,6 +51,6 @@ services:
         class: Gupalo\GoogleAuthBundle\Twig\SecurityExtension
         public: false
         arguments:
-            - '@security.token_storage'
+            - '@?security.token_storage'
         tags:
             - { name: twig.extension }
