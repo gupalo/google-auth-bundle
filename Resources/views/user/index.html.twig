@@ -51,21 +51,41 @@
     </table>
 
     <script>
-        $(() => {
-            $('[data-toggle="toggle-enabled"][data-disabled!="disabled"]').removeAttr('disabled').on('click', e => {
-                //e.preventDefault();
-                let $this = $(e.target);
-                $this.attr('disabled', 'disabled');
-                $.post($this.data('href'), {
-                    enabled: $this.is(':checked') ? 1 : 0
-                }, r => {
-                    //console.log(r);
-                    $this.removeAttr('disabled');
-                    $this.prop('checked', r.enabled);
-                }).fail(() => {
-                    console.error('error toggle enabled');
-                });
+        function initUserToggles() {
+            document.querySelectorAll('input[type="checkbox"][data-toggle="toggle-enabled"][data-href]:not([data-disabled="disabled"]):not([data-binded])').forEach(el => {
+                el.addEventListener('click', e => {
+                    let data = {
+                        enabled: el.checked ? 1 : 0
+                    };
+                    console.log('before', data);
+                    el.setAttribute('disabled', 'disabled');
+                    fetch(el.getAttribute('data-href'), {
+                        method: 'POST',
+                        cache: 'no-cache',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(data)
+                    }).then(r => {
+                        if (r.ok) {
+                            return r.json();
+                        }
+                        throw Error(r.statusText);
+                    }).then(r => {
+                        el.removeAttribute('disabled');
+                        el.checked = r.enabled;
+                        console.log('after', {
+                            js: r,
+                            enabled: el.checked ? 1 : 0
+                        });
+                    }).catch(() => {
+                        console.error('error toggle enabled');
+                    });
+                })
             })
-        })
+        }
+        if (document.readyState !== 'loading') {
+            initUserToggles();
+        } else {
+            document.addEventListener('DOMContentLoaded', initUserToggles);
+        }
     </script>
 {% endblock %}

@@ -71,7 +71,12 @@ class UserController extends AbstractController
                 throw new InvalidArgumentException('user_not_found');
             }
 
-            $user->setEnabled($request->request->get('enabled'));
+            $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            if (!isset($data['enabled'])) {
+                throw new InvalidArgumentException('enabled_undefined');
+            }
+
+            $user->setEnabled((bool)$data['enabled']);
             $this->userManager->saveUser($user);
 
             $data = ['status' => 'ok', 'message' => '', 'enabled' => $user->getEnabled() ? 1 : 0];

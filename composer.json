@@ -17,6 +17,7 @@
     },
     "require": {
         "php": ">=7.4",
+        "ext-json": "*",
         "doctrine/doctrine-bundle": "^2.1",
         "doctrine/orm": "^2.7|^3.0",
         "gupalo/browser-notifier": "^1.1",
