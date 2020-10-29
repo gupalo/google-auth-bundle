@@ -26,6 +26,7 @@
         "symfony/form": "^5.1",
         "symfony/security-core": "^5.1",
         "symfony/security-guard": "^5.1",
+        "symfony/translation": "^5.1",
         "symfony/yaml": "^5.0",
         "twig/twig": "^3.0"
     },

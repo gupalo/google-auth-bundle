@@ -1,0 +1,2 @@
+google_auth:
+    'twig_template': 'base.html.twig'
