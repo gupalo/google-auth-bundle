@@ -290,11 +290,9 @@ class GoogleAuthenticator extends SocialAuthenticator
     public function supports(Request $request): bool
     {
         // continue ONLY if the current ROUTE matches the check ROUTE or has api key
-        return (
-            $this->getDevRoles() ||
-            $request->attributes->get('_route') === 'google_auth_connect_google_check' ||
-            $this->getApiKeyFromRequest($request)
-        );
+        return
+            $request->attributes->get('_route') === 'google_auth_connect_google_check'
+            || $this->getApiKeyFromRequest($request);
     }
 
     public function supportsRememberMe(): bool
