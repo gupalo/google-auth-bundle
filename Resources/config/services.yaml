@@ -19,6 +19,8 @@ services:
     google_auth.controller.google:
         class: Gupalo\GoogleAuthBundle\Controller\GoogleController
         public: true
+        arguments:
+            - '@google_auth.security.google_authenticator'
         calls:
             - [setContainer, ["@service_container"]]
     google_auth.controller.user:
