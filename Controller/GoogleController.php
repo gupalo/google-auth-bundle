@@ -2,6 +2,7 @@
 
 namespace Gupalo\GoogleAuthBundle\Controller;
 
+use Gupalo\GoogleAuthBundle\Security\GoogleAuthenticator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -10,6 +11,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class GoogleController extends AbstractController
 {
+    private GoogleAuthenticator $googleAuthenticator;
+
+    public function __construct(GoogleAuthenticator $googleAuthenticator)
+    {
+        $this->googleAuthenticator = $googleAuthenticator;
+    }
+
     /**
      * Link to this controller to start the "connect" process
      *
@@ -34,6 +42,10 @@ class GoogleController extends AbstractController
 
     private function loginRegister(Request $request, string $prompt): Response
     {
+        if ($this->googleAuthenticator->getCredentials($request) === 'dev') {
+            return new RedirectResponse($this->generateUrl('google_auth_connect_google_check'));
+        }
+
         $link = $this->get('oauth2.registry')->getClient('google')->getOAuth2Provider()->getAuthorizationUrl(['prompt' => $prompt]);
 
         if (!$request->cookies->get('logout')) {
