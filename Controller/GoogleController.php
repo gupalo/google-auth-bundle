@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class GoogleController extends AbstractController
 {
@@ -43,13 +44,13 @@ class GoogleController extends AbstractController
     private function loginRegister(Request $request, string $prompt): Response
     {
         if ($this->googleAuthenticator->getCredentials($request) === 'dev') {
-            return new RedirectResponse($this->generateUrl('google_auth_connect_google_check'));
+            return $this->redirectToTargetUrl($request);
         }
 
         $link = $this->get('oauth2.registry')->getClient('google')->getOAuth2Provider()->getAuthorizationUrl(['prompt' => $prompt]);
 
         if (!$request->cookies->get('logout')) {
-            return RedirectResponse::create($link);
+            return new RedirectResponse($link);
         }
 
         $response = new Response();
@@ -69,8 +70,7 @@ class GoogleController extends AbstractController
      */
     public function check(Request $request): Response
     {
-        // ** if you want to *authenticate* the user, then
-        // leave this method blank and create a Guard authenticator
+        return $this->redirectToTargetUrl($request);
     }
 
     public function logout(): Response
@@ -84,5 +84,20 @@ class GoogleController extends AbstractController
         $response->headers->setCookie(new Cookie('logout', 1, '+1 hour'));
 
         return $response;
+    }
+
+    private function redirectToTargetUrl(Request $request): RedirectResponse
+    {
+        $url = null;
+        try {
+            $session = $request->getSession();
+            $url = $session->get('_security.main.target_path') ;
+        } catch (Throwable $e) {
+        }
+        if ($url === null) {
+            $url = '/';
+        }
+
+        return $this->redirect($url);
     }
 }
