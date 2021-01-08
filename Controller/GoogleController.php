@@ -44,7 +44,7 @@ class GoogleController extends AbstractController
     private function loginRegister(Request $request, string $prompt): Response
     {
         if ($this->googleAuthenticator->getCredentials($request) === 'dev') {
-            return $this->redirectToTargetUrl($request);
+            return new RedirectResponse($this->generateUrl('google_auth_connect_google_check'));
         }
 
         $link = $this->get('oauth2.registry')->getClient('google')->getOAuth2Provider()->getAuthorizationUrl(['prompt' => $prompt]);
