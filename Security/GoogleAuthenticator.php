@@ -299,6 +299,13 @@ class GoogleAuthenticator extends SocialAuthenticator
         return self::$rememberMe && !$this->getDevRoles();
     }
 
+    public function isDev(): bool
+    {
+        $domain = $this->googleDomains[0] ?? '';
+
+        return array_key_exists($domain, self::DEV_DOMAINS);
+    }
+
     private function getGoogleClient(): OAuth2ClientInterface
     {
         return $this->clientRegistry->getClient('google');
