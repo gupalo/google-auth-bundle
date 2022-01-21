@@ -225,16 +225,16 @@ class GoogleAuthenticator extends SocialAuthenticator
         return $user;
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         if ($this->getApiKeyFromRequest($request)) {
-            return JsonResponse::create(['message' => strtr($exception->getMessageKey(), $exception->getMessageData())], Response::HTTP_FORBIDDEN);
+            return new JsonResponse(['message' => strtr($exception->getMessageKey(), $exception->getMessageData())], Response::HTTP_FORBIDDEN);
         }
         if ($exception instanceof UnsupportedUserException) {
-            return Response::create('unsupported', Response::HTTP_FORBIDDEN);
+            return new Response('unsupported', Response::HTTP_FORBIDDEN);
         }
         if ($exception instanceof DisabledException) {
-            return Response::create('disabled', Response::HTTP_FORBIDDEN);
+            return new Response('disabled', Response::HTTP_FORBIDDEN);
         }
 
         $this->saveAuthenticationErrorToSession($request, $exception);
@@ -243,7 +243,7 @@ class GoogleAuthenticator extends SocialAuthenticator
         return new RedirectResponse($loginUrl);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
         if ($this->getApiKeyFromRequest($request) || $this->getDevRoles()) {
             return null;
