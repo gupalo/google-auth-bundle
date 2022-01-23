@@ -8,7 +8,7 @@ use Gupalo\GoogleAuthBundle\Entity\AbstractUser;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
 use KnpU\OAuth2ClientBundle\Exception\MissingAuthorizationCodeException;
-use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
+use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use KnpU\OAuth2ClientBundle\Security\Helper\FinishRegistrationBehavior;
 use KnpU\OAuth2ClientBundle\Security\Helper\PreviousUrlHelper;
 use KnpU\OAuth2ClientBundle\Security\Helper\SaveAuthFailureMessage;
@@ -22,13 +22,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\DisabledException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Throwable;
 
-class GoogleAuthenticator extends SocialAuthenticator
+class GoogleAuthenticator extends OAuth2Authenticator
 {
     use PreviousUrlHelper;
     use SaveAuthFailureMessage;
@@ -91,45 +94,33 @@ class GoogleAuthenticator extends SocialAuthenticator
         $this->defaultApiKey = $defaultApiKey;
     }
 
-    /**
-     * @param Request $request
-     * @return AccessToken|string|null And can exit with redirect
-     * @throws IdentityProviderException
-     */
-    public function getCredentials(Request $request)
+    public function isDev(): bool
     {
-        if ($this->getDevRoles()) {
-            return 'dev';
-        }
+        $domain = $this->googleDomains[0] ?? '';
 
-        $token = $this->getApiKeyFromRequest($request);
-
-        if (!$token) {
-            try {
-                $client = $this->getGoogleClient();
-                $token = $client->getAccessToken();
-            } catch (MissingAuthorizationCodeException $e) {
-                header('Location: ' . $this->router->generate('google_auth_security_register'));
-                exit;
-            } catch (IdentityProviderException $e) {
-                // you could parse the response to see the problem
-                throw $e;
-            }
-        }
-
-        return $token;
+        return array_key_exists($domain, self::DEV_DOMAINS);
     }
 
-    /**
-     * @param AccessToken|string|null $credentials
-     * @param UserProviderInterface $userProvider
-     * @return User|null
-     * @throws Exception
-     */
-    public function getUser($credentials, UserProviderInterface $userProvider): ?AbstractUser
+    public function supportsRememberMe(): bool
     {
+        return self::$rememberMe && !$this->getDevRoles();
+    }
+
+    /** @throws IdentityProviderException */
+    public function authenticate(Request $request): Passport
+    {
+        $user = $this->getUser($request);
+
+        return new SelfValidatingPassport(new UserBadge($user->getUsername()));
+    }
+
+    /** @throws IdentityProviderException */
+    private function getUser(Request $request): AbstractUser
+    {
+        $credentials = $this->getCredentials($request);
+
         if ($credentials === null) {
-            return null;
+            throw new AccessDeniedException();
         }
 
         if ($this->getDevRoles()) {
@@ -225,6 +216,42 @@ class GoogleAuthenticator extends SocialAuthenticator
         return $user;
     }
 
+    /**
+     * Does the authenticator support the given Request?
+     *
+     * If this returns false, the authenticator will be skipped.
+     *
+     * @param Request $request
+     * @return bool
+     */
+    public function supports(Request $request): ?bool
+    {
+        // continue ONLY if the current ROUTE matches the check ROUTE or has api key
+        return (
+            $request->attributes->get('_route') === 'google_auth_connect_google_check' ||
+            $this->getApiKeyFromRequest($request)
+        );
+    }
+
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
+    {
+        if ($this->getApiKeyFromRequest($request) || $this->getDevRoles()) {
+            return null;
+        }
+
+        $url = $this->getPreviousUrl($request, $firewallName);
+        if (!$url) {
+            try {
+                /** @noinspection PhpRouteMissingInspection */
+                $url = $this->router->generate('homepage');
+            } catch (Throwable $e) {
+                $url = '/';
+            }
+        }
+
+        return new RedirectResponse($url);
+    }
+
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         if ($this->getApiKeyFromRequest($request)) {
@@ -243,96 +270,39 @@ class GoogleAuthenticator extends SocialAuthenticator
         return new RedirectResponse($loginUrl);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
+    /**
+     * @param Request $request
+     * @return AccessToken|string|null And can exit with redirect
+     * @throws IdentityProviderException
+     * @noinspection PhpExceptionImmediatelyRethrownInspection
+     */
+    public function getCredentials(Request $request)
     {
-        if ($this->getApiKeyFromRequest($request) || $this->getDevRoles()) {
-            return null;
+        if ($this->getDevRoles()) {
+            return 'dev';
         }
 
-        $url = $this->getPreviousUrl($request, $providerKey);
-        if (!$url) {
+        $token = $this->getApiKeyFromRequest($request);
+
+        if (!$token) {
             try {
-                /** @noinspection PhpRouteMissingInspection */
-                $url = $this->router->generate('homepage');
-            } catch (Throwable $e) {
-                $url = '/';
+                $client = $this->getGoogleClient();
+                $token = $client->getAccessToken();
+            } catch (MissingAuthorizationCodeException $e) {
+                header('Location: ' . $this->router->generate('google_auth_security_register'));
+                exit;
+            } catch (IdentityProviderException $e) {
+                // you could parse the response to see the problem
+                throw $e;
             }
         }
 
-        return new RedirectResponse($url);
-    }
-
-    /**
-     * Called when an anonymous user tries to access an protected page.
-     *
-     * In our app, this is never actually called, because there is only *one* "entry_point" per firewall and in security.yml,
-     * we're using app.form_login_authenticator as the entry point (so it's start() method is the one that's called).
-     * @param Request $request
-     * @param AuthenticationException $authException
-     * @return Response
-     */
-    public function start(Request $request, AuthenticationException $authException = null)
-    {
-        // not called in our app, but if it were, redirecting to the login page makes sense
-        $url = $this->router->generate('google_auth_security_login');
-
-        return new RedirectResponse($url);
-    }
-
-    /**
-     * Does the authenticator support the given Request?
-     *
-     * If this returns false, the authenticator will be skipped.
-     *
-     * @param Request $request
-     * @return bool
-     */
-    public function supports(Request $request): bool
-    {
-        // continue ONLY if the current ROUTE matches the check ROUTE or has api key
-        return $request->attributes->get('_route') === 'google_auth_connect_google_check' ||
-            $this->getApiKeyFromRequest($request);
-    }
-
-    public function supportsRememberMe(): bool
-    {
-        return self::$rememberMe && !$this->getDevRoles();
-    }
-
-    public function isDev(): bool
-    {
-        $domain = $this->googleDomains[0] ?? '';
-
-        return array_key_exists($domain, self::DEV_DOMAINS);
+        return $token;
     }
 
     private function getGoogleClient(): OAuth2ClientInterface
     {
         return $this->clientRegistry->getClient('google');
-    }
-
-    private function isAllowedUsername(?string $username): bool
-    {
-        return (
-            in_array($username, $this->allowedUsernames, true) ||
-            $this->isAdminUsername($username)
-        );
-    }
-
-    private function isAdminUsername(?string $username): bool
-    {
-        return in_array($username, $this->adminUsernames, true);
-    }
-
-    private function generateApiKey(): string
-    {
-        try {
-            $apiKey = bin2hex(random_bytes(16));
-        } catch (Throwable $e) {
-            $apiKey = '';
-        }
-
-        return $apiKey;
     }
 
     private function getApiKeyFromRequest(Request $request): ?string
@@ -447,5 +417,29 @@ class GoogleAuthenticator extends SocialAuthenticator
         }
 
         return $user;
+    }
+
+    private function isAllowedUsername(?string $username): bool
+    {
+        return (
+            in_array($username, $this->allowedUsernames, true) ||
+            $this->isAdminUsername($username)
+        );
+    }
+
+    private function isAdminUsername(?string $username): bool
+    {
+        return in_array($username, $this->adminUsernames, true);
+    }
+
+    private function generateApiKey(): string
+    {
+        try {
+            $apiKey = bin2hex(random_bytes(16));
+        } catch (Throwable $e) {
+            $apiKey = '';
+        }
+
+        return $apiKey;
     }
 }

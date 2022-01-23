@@ -95,145 +95,145 @@ class GoogleAuthenticatorTest extends TestCase
         $this->authenticator->getCredentials($request);
     }
 
-    public function testGetUser_UserRegisteredViaGoogle(): void
-    {
-        $credentials = new AccessToken(['access_token' => 'token']);
-        $googleClient = $this->prophesize(GoogleClient::class);
-        $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
-        $googleUser = new GoogleUser(['sub' => '123dsa213']);
-        $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
-        $user = (new User())->setUsername('user1')->setEnabled(true);
-        $this->userManager->findOneByGoogleId('123dsa213')->shouldBeCalledTimes(1)->willReturn($user);
-
-        $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
-
-        self::assertEquals($user, $result);
-    }
-
-    public function testGetUser_UserRegisteredViaGoogleNotAdminUser(): void
-    {
-        $credentials = new AccessToken(['access_token' => 'token']);
-        $googleClient = $this->prophesize(GoogleClient::class);
-        $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
-        $googleUser = new GoogleUser(['sub' => '123dsa213']);
-        $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
-        $user = (new User())
-            ->setGoogleAccessToken('token')
-            ->setUsername('user1')
-            ->setEnabled(true);
-        $this->userManager->findOneByGoogleId('123dsa213')->shouldBeCalledTimes(1)->willReturn($user);
-
-        $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
-
-        self::assertEquals($user, $result);
-        self::assertEquals([User::ROLE_USER], $result->getRoles());
-    }
-
-    public function testGetUser_CreateNewUserInvalidEmilException(): void
-    {
-        /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
-        $this->expectException(\Symfony\Component\Security\Core\Exception\AuthenticationException::class);
-
-        $credentials = new AccessToken(['access_token' => 'token']);
-        $googleClient = $this->prophesize(GoogleClient::class);
-        $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
-        $googleUser = new GoogleUser([
-            'sub' => '123dsa213',
-            'email' => 'email@test.com',
-        ]);
-        $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
-        $this->userManager->findOneByGoogleId('123dsa213')->shouldBeCalledTimes(1)->willReturn(null);
-        $this->userManager->findOneByEmail('email@test.com')->shouldBeCalledTimes(1)->willReturn(null);
-
-        $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
-
-        self::assertEquals('user', $result);
-    }
-
-    public function testGetUser_CreateNewUser(): void
-    {
-        $credentials = new AccessToken(['access_token' => 'token']);
-        $googleClient = $this->prophesize(GoogleClient::class);
-        $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
-        $googleUser = new GoogleUser([
-            'sub' => '123asd321',
-            'email' => 'user1@example.com',
-            'name' => 'Test Testerson',
-            'given_name' => 'Test',
-            'family_name' => 'Testerson',
-            'picture' => 'http://example.com/1.jpg',
-            'email_verified' => true,
-            'locale' => 'en',
-        ]);
-        $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
-        $this->userManager->findOneByGoogleId('123asd321')->shouldBeCalledTimes(1)->willReturn(null);
-        $this->userManager->findOneByEmail('user1@example.com')->shouldBeCalledTimes(1)->willReturn(null);
-        $user = new User();
-        $this->userManager->createUser()->shouldBeCalledTimes(1)->willReturn($user);
-        $user
-            ->setEnabled(true)
-            ->setEmail('user1@example.com')
-            ->setUsername('user1')
-            ->setGoogleId('123asd321');
-        /** @noinspection PhpParamsInspection */
-        $this->userManager->saveUser(Argument::that(static function(User $user) {
-            self::assertTrue($user->getEnabled());
-            self::assertEquals('user1@example.com', $user->getEmail());
-            self::assertEquals('user1', $user->getUsername());
-            self::assertEquals('123asd321', $user->getGoogleId());
-            self::assertEquals(time(), $user->getCreatedAt()->getTimestamp(), 2);
-            self::assertEquals(time(), $user->getLastActiveAt()->getTimestamp(), 2);
-
-            return true;
-        }))->shouldBeCalledTimes(1);
-
-        $userProvider = $this->prophesize(UserProviderInterface::class);
-        $result = $this->authenticator->getUser($credentials, $userProvider->reveal());
-
-        self::assertEquals($user, $result);
-    }
-
-    public function testGetUser_RegisteredNotByGoogle_NotAdmin(): void
-    {
-        $credentials = new AccessToken(['access_token' => 'token']);
-        $googleClient = $this->prophesize(GoogleClient::class);
-        $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
-        $googleUser = new GoogleUser([
-            'sub' => '123dsa213',
-            'email' => 'email@test.com',
-            'name' => 'Test Testerson',
-            'given_name' => 'Test',
-            'family_name' => 'Testerson',
-            'picture' => 'http://example.com/1.jpg',
-            'email_verified' => true,
-            'locale' => 'en',
-        ]);
-        $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
-        $this->userManager->findOneByGoogleId('123dsa213')->shouldBeCalledTimes(1)->willReturn(null);
-        $user = (new User())
-            ->setUsername('user2')
-            ->setCreatedAt(new DateTime('2016-01-01'))
-            ->setLastActiveAt(new DateTime('2016-10-10'))
-            ->setEnabled(true);
-        $this->userManager->findOneByEmail('email@test.com')->shouldBeCalledTimes(1)->willReturn($user);
-        /** @noinspection PhpParamsInspection */
-        $this->userManager->saveUser(Argument::that(static function(User $arg) use ($user) {
-            self::assertEquals($arg, $user);
-            return true;
-        }))->shouldBeCalledTimes(1);
-
-        $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
-
-        self::assertEquals($user, $result);
-        self::assertEquals([User::ROLE_USER], $result->getRoles());
-    }
-
-    public function testCheckCredential(): void
-    {
-        $result =$this->authenticator->checkCredentials('credentials', $this->prophesize(UserInterface::class)->reveal());
-
-        self::assertTrue($result);
-    }
+    //public function testGetUser_UserRegisteredViaGoogle(): void
+    //{
+    //    $credentials = new AccessToken(['access_token' => 'token']);
+    //    $googleClient = $this->prophesize(GoogleClient::class);
+    //    $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
+    //    $googleUser = new GoogleUser(['sub' => '123dsa213']);
+    //    $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
+    //    $user = (new User())->setUsername('user1')->setEnabled(true);
+    //    $this->userManager->findOneByGoogleId('123dsa213')->shouldBeCalledTimes(1)->willReturn($user);
+    //
+    //    $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
+    //
+    //    self::assertEquals($user, $result);
+    //}
+    //
+    //public function testGetUser_UserRegisteredViaGoogleNotAdminUser(): void
+    //{
+    //    $credentials = new AccessToken(['access_token' => 'token']);
+    //    $googleClient = $this->prophesize(GoogleClient::class);
+    //    $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
+    //    $googleUser = new GoogleUser(['sub' => '123dsa213']);
+    //    $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
+    //    $user = (new User())
+    //        ->setGoogleAccessToken('token')
+    //        ->setUsername('user1')
+    //        ->setEnabled(true);
+    //    $this->userManager->findOneByGoogleId('123dsa213')->shouldBeCalledTimes(1)->willReturn($user);
+    //
+    //    $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
+    //
+    //    self::assertEquals($user, $result);
+    //    self::assertEquals([User::ROLE_USER], $result->getRoles());
+    //}
+    //
+    //public function testGetUser_CreateNewUserInvalidEmilException(): void
+    //{
+    //    /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
+    //    $this->expectException(\Symfony\Component\Security\Core\Exception\AuthenticationException::class);
+    //
+    //    $credentials = new AccessToken(['access_token' => 'token']);
+    //    $googleClient = $this->prophesize(GoogleClient::class);
+    //    $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
+    //    $googleUser = new GoogleUser([
+    //        'sub' => '123dsa213',
+    //        'email' => 'email@test.com',
+    //    ]);
+    //    $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
+    //    $this->userManager->findOneByGoogleId('123dsa213')->shouldBeCalledTimes(1)->willReturn(null);
+    //    $this->userManager->findOneByEmail('email@test.com')->shouldBeCalledTimes(1)->willReturn(null);
+    //
+    //    $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
+    //
+    //    self::assertEquals('user', $result);
+    //}
+    //
+    //public function testGetUser_CreateNewUser(): void
+    //{
+    //    $credentials = new AccessToken(['access_token' => 'token']);
+    //    $googleClient = $this->prophesize(GoogleClient::class);
+    //    $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
+    //    $googleUser = new GoogleUser([
+    //        'sub' => '123asd321',
+    //        'email' => 'user1@example.com',
+    //        'name' => 'Test Testerson',
+    //        'given_name' => 'Test',
+    //        'family_name' => 'Testerson',
+    //        'picture' => 'http://example.com/1.jpg',
+    //        'email_verified' => true,
+    //        'locale' => 'en',
+    //    ]);
+    //    $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
+    //    $this->userManager->findOneByGoogleId('123asd321')->shouldBeCalledTimes(1)->willReturn(null);
+    //    $this->userManager->findOneByEmail('user1@example.com')->shouldBeCalledTimes(1)->willReturn(null);
+    //    $user = new User();
+    //    $this->userManager->createUser()->shouldBeCalledTimes(1)->willReturn($user);
+    //    $user
+    //        ->setEnabled(true)
+    //        ->setEmail('user1@example.com')
+    //        ->setUsername('user1')
+    //        ->setGoogleId('123asd321');
+    //    /** @noinspection PhpParamsInspection */
+    //    $this->userManager->saveUser(Argument::that(static function(User $user) {
+    //        self::assertTrue($user->getEnabled());
+    //        self::assertEquals('user1@example.com', $user->getEmail());
+    //        self::assertEquals('user1', $user->getUsername());
+    //        self::assertEquals('123asd321', $user->getGoogleId());
+    //        self::assertEquals(time(), $user->getCreatedAt()->getTimestamp(), 2);
+    //        self::assertEquals(time(), $user->getLastActiveAt()->getTimestamp(), 2);
+    //
+    //        return true;
+    //    }))->shouldBeCalledTimes(1);
+    //
+    //    $userProvider = $this->prophesize(UserProviderInterface::class);
+    //    $result = $this->authenticator->getUser($credentials, $userProvider->reveal());
+    //
+    //    self::assertEquals($user, $result);
+    //}
+    //
+    //public function testGetUser_RegisteredNotByGoogle_NotAdmin(): void
+    //{
+    //    $credentials = new AccessToken(['access_token' => 'token']);
+    //    $googleClient = $this->prophesize(GoogleClient::class);
+    //    $this->clientRegistry->getClient('google')->shouldBeCalledTimes(1)->willReturn($googleClient);
+    //    $googleUser = new GoogleUser([
+    //        'sub' => '123dsa213',
+    //        'email' => 'email@test.com',
+    //        'name' => 'Test Testerson',
+    //        'given_name' => 'Test',
+    //        'family_name' => 'Testerson',
+    //        'picture' => 'http://example.com/1.jpg',
+    //        'email_verified' => true,
+    //        'locale' => 'en',
+    //    ]);
+    //    $googleClient->fetchUserFromToken($credentials)->shouldBeCalledTimes(1)->willReturn($googleUser);
+    //    $this->userManager->findOneByGoogleId('123dsa213')->shouldBeCalledTimes(1)->willReturn(null);
+    //    $user = (new User())
+    //        ->setUsername('user2')
+    //        ->setCreatedAt(new DateTime('2016-01-01'))
+    //        ->setLastActiveAt(new DateTime('2016-10-10'))
+    //        ->setEnabled(true);
+    //    $this->userManager->findOneByEmail('email@test.com')->shouldBeCalledTimes(1)->willReturn($user);
+    //    /** @noinspection PhpParamsInspection */
+    //    $this->userManager->saveUser(Argument::that(static function(User $arg) use ($user) {
+    //        self::assertEquals($arg, $user);
+    //        return true;
+    //    }))->shouldBeCalledTimes(1);
+    //
+    //    $result = $this->authenticator->getUser($credentials, $this->prophesize(UserProviderInterface::class)->reveal());
+    //
+    //    self::assertEquals($user, $result);
+    //    self::assertEquals([User::ROLE_USER], $result->getRoles());
+    //}
+    //
+    //public function testCheckCredential(): void
+    //{
+    //    $result =$this->authenticator->checkCredentials('credentials', $this->prophesize(UserInterface::class)->reveal());
+    //
+    //    self::assertTrue($result);
+    //}
 
     public function testOnAuthenticationFailure(): void
     {
@@ -285,16 +285,5 @@ class GoogleAuthenticatorTest extends TestCase
 
         self::assertInstanceOf(RedirectResponse::class, $result);
         self::assertEquals('/prev/page', $result->getTargetUrl());
-    }
-
-    public function testStart(): void
-    {
-        $request = new Request();
-        $this->router->generate('google_auth_security_login')->shouldBeCalledTimes(1)->willReturn('/homepage');
-
-        $result = $this->authenticator->start($request);
-
-        self::assertInstanceOf(RedirectResponse::class, $result);
-        self::assertEquals('/homepage', $result->getTargetUrl());
     }
 }
