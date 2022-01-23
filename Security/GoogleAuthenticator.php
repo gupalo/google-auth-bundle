@@ -3,7 +3,6 @@
 namespace Gupalo\GoogleAuthBundle\Security;
 
 use DateTime;
-use Exception;
 use Gupalo\GoogleAuthBundle\Entity\AbstractUser;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface;
@@ -29,9 +28,10 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Throwable;
 
-class GoogleAuthenticator extends OAuth2Authenticator
+class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationEntryPointInterface
 {
     use PreviousUrlHelper;
     use SaveAuthFailureMessage;
@@ -441,5 +441,22 @@ class GoogleAuthenticator extends OAuth2Authenticator
         }
 
         return $apiKey;
+    }
+
+    /**
+     * Called when an anonymous user tries to access an protected page.
+     *
+     * In our app, this is never actually called, because there is only *one* "entry_point" per firewall and in security.yml,
+     * we're using app.form_login_authenticator as the entry point (so it's start() method is the one that's called).
+     * @param Request $request
+     * @param AuthenticationException|null $authException
+     * @return Response
+     */
+    public function start(Request $request, AuthenticationException $authException = null)
+    {
+        // not called in our app, but if it were, redirecting to the login page makes sense
+        $url = $this->router->generate('google_auth_security_login');
+
+        return new RedirectResponse($url);
     }
 }
