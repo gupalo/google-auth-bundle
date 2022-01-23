@@ -21,6 +21,8 @@ services:
         public: true
         arguments:
             - '@google_auth.security.google_authenticator'
+            - '@oauth2.registry'
+            - '@router'
         calls:
             - [setContainer, ["@service_container"]]
     google_auth.controller.user:
