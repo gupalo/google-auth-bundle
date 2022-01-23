@@ -2,3 +2,4 @@
 vendor/
 coverage.xml
 .phpunit.result.cache
+composer.lock

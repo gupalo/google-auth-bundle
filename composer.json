@@ -18,23 +18,23 @@
     "require": {
         "php": ">=7.4",
         "ext-json": "*",
-        "doctrine/doctrine-bundle": "^2.1",
-        "doctrine/orm": "^2.7|^3.0",
+        "doctrine/doctrine-bundle": "^2.5",
+        "doctrine/orm": "^2.11|^3.0",
         "gupalo/browser-notifier": "^1.1",
         "gupalo/uidgenerator": "^1.1",
-        "knpuniversity/oauth2-client-bundle": "^2.1",
-        "league/oauth2-google": "^3.0",
-        "symfony/form": "^5.1",
-        "symfony/security-core": "^5.1",
-        "symfony/security-guard": "^5.1",
-        "symfony/translation": "^5.1",
-        "symfony/yaml": "^5.0",
-        "twig/twig": "^3.0"
+        "knpuniversity/oauth2-client-bundle": "^2.9",
+        "league/oauth2-google": "^4.0",
+        "symfony/form": "^5.4|^6.0",
+        "symfony/security-core": "^5.4|^6.0",
+        "symfony/security-guard": "^5.4|^6.0",
+        "symfony/translation": "^5.4|^6.0",
+        "symfony/yaml": "^5.4|^6.0",
+        "twig/twig": "^3.3"
     },
     "require-dev": {
         "phpspec/prophecy-phpunit": "^2.0",
-        "phpunit/phpunit": "^9.4",
-        "roave/security-advisories": "dev-master"
+        "phpunit/phpunit": "^9.5",
+        "roave/security-advisories": "dev-latest"
     },
     "config": {
         "preferred-install": {
