@@ -19,17 +19,18 @@ services:
     google_auth.controller.google:
         class: Gupalo\GoogleAuthBundle\Controller\GoogleController
         public: true
+        autowire: true
+        autoconfigure: true
         arguments:
             - '@google_auth.security.google_authenticator'
             - '@oauth2.registry'
             - '@router'
-        calls:
-            - [setContainer, ["@service_container"]]
+
     google_auth.controller.user:
         class: Gupalo\GoogleAuthBundle\Controller\UserController
         public: true
-        calls:
-            - [setContainer, ["@service_container"]]
+        autowire: true
+        autoconfigure: true
         arguments:
             - '@Gupalo\BrowserNotifier\BrowserNotifier'
             - '@google_auth.model.user_manager'
