@@ -24,10 +24,10 @@
         "gupalo/uidgenerator": "^1.1",
         "knpuniversity/oauth2-client-bundle": "^2.9",
         "league/oauth2-google": "^4.0",
-        "symfony/form": "^6.0",
-        "symfony/security-core": "^6.0",
-        "symfony/translation": "^6.0",
-        "symfony/yaml": "^6.0",
+        "symfony/form": "^5.4|^6.0",
+        "symfony/security-core": "^5.4|^6.0",
+        "symfony/translation": "^5.4|^6.0",
+        "symfony/yaml": "^5.4|^6.0",
         "twig/twig": "^3.3"
     },
     "require-dev": {
